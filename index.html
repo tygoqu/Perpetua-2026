@@ -4,45 +4,37 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Perpetua 2026 — Нээлтийн Хөтөлбөр</title>
-    <!-- Premium Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400;1,500&display=swap" rel="stylesheet">
+    <!-- Premium Fonts: Cinzel for Intro, Playfair and Outfit for content -->
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;800&family=Outfit:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400;1,500&display=swap" rel="stylesheet">
+    
     <style>
-        /* --- Custom Fonts --- */
-        @font-face {
-            font-family: 'SOONER';
-            src: url('./sooner.otf') format('opentype');
-            font-weight: normal;
-            font-style: normal;
-            font-display: swap;
-        }
-
         /* --- Premium CSS Variables --- */
-        /* Dark Theme (Teaser / Night) */
         :root {
-            --bg: #0C0C0C; /* Анхны хуудас тас хар/гүн саарал */
+            --bg: #0C0C0C; /* Шөнийн гүн хар/саарал өнгө */
             --text: #f0f4ee;
-            --text-secondary: rgba(240, 244, 238, 0.6);
-            --surface: rgba(255, 255, 255, 0.03);
+            --text-secondary: rgba(240, 244, 238, 0.5);
+            --surface: rgba(255, 255, 255, 0.04);
             --border: rgba(255, 255, 255, 0.08);
             --accent: #4ade80;
             --accent-glow: rgba(74, 222, 128, 0.2);
-            --sun-glow: rgba(74, 222, 128, 0); /* Hidden at start */
+            --sun-glow: rgba(74, 222, 128, 0); /* Анх орж ирэхэд нуугдмал */
             
-            --block: 'SOONER', sans-serif; /* Зөвхөн анхны гарчигт */
-            --serif: 'Playfair Display', Georgia, serif; /* Хөтөлбөрийн гарчгуудад */
-            --sans: 'Outfit', -apple-system, sans-serif; /* Үндсэн текстэд */
+            /* Cinzel фонтыг гол гарчигт тохирууллаа */
+            --intro-font: 'Cinzel', serif; 
+            --serif: 'Playfair Display', Georgia, serif; 
+            --sans: 'Outfit', -apple-system, sans-serif; 
         }
 
         /* Light Theme (Sunrise / Premium Soft Sage) */
         body.sunrise-active {
-            --bg: #dce3d6; /* Доош гүйлгэх үед тансаг цайвар ногоон болно */
-            --text: #111a14; /* Very dark rich green-black for text */
+            --bg: #dce3d6; 
+            --text: #111a14; 
             --text-secondary: rgba(17, 26, 20, 0.6);
             --surface: rgba(255, 255, 255, 0.4);
             --border: rgba(0, 0, 0, 0.06);
             --accent: #2e7d32;
             --accent-glow: rgba(46, 125, 50, 0.15);
-            --sun-glow: rgba(255, 245, 220, 0.6); /* Soft morning light */
+            --sun-glow: rgba(255, 245, 220, 0.6); /* Нарны зөөлөн туяа */
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -56,8 +48,76 @@
             line-height: 1.6;
             overflow-x: hidden; 
             -webkit-font-smoothing: antialiased;
-            /* Уусгалтыг илүү удаан, натурал болгох (3 секунд) */
+            /* Өнгөний шилжилт (Хараас -> Ногоон руу) 3 секунд */
             transition: background-color 3s ease-in-out, color 3s ease-in-out;
+        }
+
+        /* --- Spotlight / Flashlight Effect --- */
+        .spotlight {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            pointer-events: none; /* Хулганы товшилтод саад болохгүй */
+            z-index: 900;
+            background: radial-gradient(
+                circle 700px at var(--cursor-x, 50vw) var(--cursor-y, 50vh),
+                rgba(46, 125, 50, 0.15) 0%,
+                rgba(12, 12, 12, 0.4) 30%,
+                rgba(12, 12, 12, 0.9) 60%,
+                #0C0C0C 100%
+            );
+            transition: opacity 0.5s ease;
+        }
+
+        /* Зөвхөн хулгана/компьютертай төхөөрөмж дээр ажиллах */
+        @media (hover: none) and (pointer: coarse) {
+            .spotlight {
+                display: none; 
+            }
+        }
+
+        /* Гэрэл асаалттай үед гэрэлтүүлэгчийг унтраах */
+        body.lights-on .spotlight {
+            opacity: 0; 
+        }
+
+        /* --- Light Switch Button --- */
+        .light-switch {
+            position: fixed;
+            top: 30px;
+            right: 40px;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            color: var(--text);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 1000;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+        }
+
+        .light-switch:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: scale(1.05);
+        }
+
+        .light-switch svg {
+            width: 22px;
+            height: 22px;
+            fill: currentColor;
+            transition: color 0.3s ease;
+        }
+
+        body.lights-on .light-switch svg {
+            color: var(--accent); /* Ассан үед ногоон болох */
         }
 
         /* --- Wave Glow Background (Доороос уусах) --- */
@@ -69,7 +129,6 @@
             height: 100vh;
             background: linear-gradient(to top, var(--sun-glow) 0%, transparent 100%);
             z-index: -1;
-            /* Долгионы уусгалтыг мөн адил удаашруулсан */
             transition: bottom 3.5s cubic-bezier(0.25, 1, 0.5, 1), background 3s ease-in-out;
             pointer-events: none;
         }
@@ -102,16 +161,17 @@
         }
 
         .intro-title {
-            font-family: var(--block);
+            font-family: var(--intro-font); /* Cinzel фонтыг дуудах */
             font-size: clamp(60px, 12vw, 150px);
-            font-weight: 900;
-            letter-spacing: 2px;
+            font-weight: 600;
+            letter-spacing: 4px; /* Cinzel фонт дээр үсэг хоорондын зай маш гоё харагддаг */
             margin-bottom: 20px;
-            background: linear-gradient(180deg, #fff 0%, rgba(255,255,255,0.3) 100%);
+            text-transform: uppercase;
+            background: linear-gradient(180deg, #fff 0%, rgba(255,255,255,0.4) 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             opacity: 0;
-            animation: slowFade 1.5s ease forwards 0.2s;
+            animation: slowFade 2s ease forwards 0.2s;
         }
 
         body.sunrise-active .intro-title {
@@ -121,7 +181,7 @@
         }
 
         @keyframes slowFade {
-            from { opacity: 0; transform: translateY(10px); }
+            from { opacity: 0; transform: translateY(15px); }
             to { opacity: 1; transform: translateY(0); }
         }
 
@@ -176,8 +236,6 @@
             font-weight: 500;
             line-height: 1.1;
             margin-bottom: 30px;
-            text-transform: none;
-            letter-spacing: normal;
         }
 
         .hero h2 em {
@@ -213,6 +271,8 @@
             display: inline-block;
             font-family: var(--sans);
             letter-spacing: 0.5px;
+            position: relative;
+            z-index: 20;
         }
 
         .btn-primary {
@@ -245,8 +305,8 @@
             border: 1px solid var(--border);
             border-radius: 20px;
             padding: 40px;
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
             gap: 40px;
             margin-bottom: 120px;
             flex-wrap: wrap;
@@ -282,8 +342,6 @@
             font-size: 42px;
             margin-bottom: 60px;
             text-align: center;
-            text-transform: none;
-            letter-spacing: normal;
         }
 
         .schedule-grid {
@@ -333,8 +391,6 @@
             font-weight: 500;
             margin-bottom: 15px;
             color: var(--text);
-            text-transform: none;
-            letter-spacing: normal;
         }
 
         .s-desc {
@@ -377,7 +433,7 @@
         .flower {
             position: absolute;
             pointer-events: none; 
-            z-index: 1;
+            z-index: 1; 
             width: 140px;
             height: 140px;
             opacity: 0;
@@ -392,10 +448,10 @@
             display: none;
             position: fixed;
             inset: 0;
-            background: rgba(0,0,0,0.7);
+            background: rgba(0,0,0,0.8);
             backdrop-filter: blur(15px);
             -webkit-backdrop-filter: blur(15px);
-            z-index: 1000;
+            z-index: 2000; 
             align-items: center;
             justify-content: center;
             padding: 20px;
@@ -489,6 +545,16 @@
     </style>
 </head>
 <body>
+
+<!-- Компьютер дээр хулгана дагах гэрэлтүүлэгч (Spotlight) -->
+<div class="spotlight" id="spotlight"></div>
+
+<!-- Гэрлийн унтраалга (Light Switch) -->
+<button class="light-switch" id="light-switch" title="Гэрэл асаах/унтраах">
+    <svg viewBox="0 0 24 24">
+        <path d="M12 2a7 7 0 0 0-7 7c0 2.38 1.19 4.47 3 5.74V17a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1v-2.26c1.81-1.27 3-3.36 3-5.74a7 7 0 0 0-7-7zm2 19h-4v1a1 1 0 0 0 1 1h2a1 1 0 0 0 1-1v-1z"/>
+    </svg>
+</button>
 
 <!-- Sunrise Glow Effect (Доороос уусах долгион) -->
 <div class="sun-wave"></div>
@@ -671,13 +737,27 @@
 </div>
 
 <script>
-    // --- 1. Apple-style Scroll Reveal Logic ---
+    // --- 1. Spotlight (Flashlight) Logic ---
+    const spotlight = document.getElementById('spotlight');
+    
+    document.addEventListener('mousemove', (e) => {
+        spotlight.style.setProperty('--cursor-x', `${e.clientX}px`);
+        spotlight.style.setProperty('--cursor-y', `${e.clientY}px`);
+    });
+
+    // --- 2. Light Switch Logic ---
+    const lightSwitchBtn = document.getElementById('light-switch');
+    lightSwitchBtn.addEventListener('click', () => {
+        document.body.classList.toggle('lights-on');
+    });
+
+    // --- 3. Apple-style Scroll Reveal Logic ---
     function reveal() {
         const reveals = document.querySelectorAll('.reveal');
         for (let i = 0; i < reveals.length; i++) {
             const windowHeight = window.innerHeight;
             const elementTop = reveals[i].getBoundingClientRect().top;
-            const elementVisible = 100; // Trigger point
+            const elementVisible = 100; 
 
             if (elementTop < windowHeight - elementVisible) {
                 reveals[i].classList.add('active');
@@ -685,9 +765,9 @@
         }
     }
     window.addEventListener('scroll', reveal);
-    reveal(); // Trigger once on load
+    reveal(); 
 
-    // --- 2. Sunrise Effect Trigger (Premium Soft Sage) ---
+    // --- 4. Sunrise Effect Trigger ---
     window.addEventListener('scroll', () => {
         // Trigger background change when scrolling down 25% of viewport
         if (window.scrollY > window.innerHeight * 0.25) {
@@ -697,13 +777,12 @@
         }
     });
 
-    // --- 3. Original Blooming SVG Flowers Logic ---
+    // --- 5. Blooming SVG Flowers Logic ---
     let lastScroll = window.scrollY;
     
     window.addEventListener('scroll', () => {
         const currentScroll = window.scrollY;
         
-        // Bloom a new flower every 180 pixels scrolled
         if (Math.abs(currentScroll - lastScroll) > 180) {
             createFlower(currentScroll);
             lastScroll = currentScroll;
@@ -717,7 +796,6 @@
         const flower = document.createElement('div');
         flower.className = 'flower';
         
-        // Spawn either on the far left or far right edges
         const isLeft = Math.random() > 0.5;
         if (isLeft) {
             flower.style.left = '-30px';
@@ -725,7 +803,6 @@
             flower.style.right = '-30px';
         }
         
-        // Spawn slightly offset from current scroll
         const randomYOffset = Math.random() * (window.innerHeight * 0.8);
         flower.style.top = `${scrollY + randomYOffset}px`;
         
@@ -740,11 +817,10 @@
         `;
 
         document.body.appendChild(flower);
-
         setTimeout(() => { flower.remove(); }, 4500);
     }
 
-    // --- 4. Strict Modal Logic ---
+    // --- 6. Strict Modal Logic ---
     function openModal() {
         document.getElementById('modal').style.display = 'flex';
         document.body.style.overflow = 'hidden'; 
