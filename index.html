@@ -3,362 +3,437 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Perpetua 2026 — Нээлтийн Хөтөлбөр & Удирдамж</title>
-    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
+    <title>Perpetua 2026 — Нээлтийн Хөтөлбөр</title>
+    <!-- Premium Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400;1,500&display=swap" rel="stylesheet">
     <style>
+        /* --- Custom Fonts --- */
+        @font-face {
+            font-family: 'SOONER';
+            src: url('./sooner.otf') format('opentype');
+            font-weight: normal;
+            font-style: normal;
+            font-display: swap;
+        }
+
+        /* --- Premium CSS Variables --- */
+        /* Dark Theme (Teaser / Night) */
         :root {
-            --bg: #030804;
-            --bg-accent: #0a1f11;
-            --surface: rgba(255, 255, 255, 0.05);
-            --surface-hover: rgba(255, 255, 255, 0.08);
-            --border: rgba(255, 255, 255, 0.1);
-            --accent: #34c759;
-            --accent-glow: rgba(52, 199, 89, 0.4);
-            --text: #ffffff;
-            --text-secondary: rgba(255, 255, 255, 0.6);
-            --serif: 'DM Serif Display', serif;
-            --sans: 'DM Sans', sans-serif;
+            --bg: #0C0C0C; /* Анхны хуудас тас хар/гүн саарал */
+            --text: #f0f4ee;
+            --text-secondary: rgba(240, 244, 238, 0.6);
+            --surface: rgba(255, 255, 255, 0.03);
+            --border: rgba(255, 255, 255, 0.08);
+            --accent: #4ade80;
+            --accent-glow: rgba(74, 222, 128, 0.2);
+            --sun-glow: rgba(74, 222, 128, 0); /* Hidden at start */
+            
+            --block: 'SOONER', sans-serif; /* Зөвхөн анхны гарчигт */
+            --serif: 'Playfair Display', Georgia, serif; /* Хөтөлбөрийн гарчгуудад */
+            --sans: 'Outfit', -apple-system, sans-serif; /* Үндсэн текстэд */
         }
 
-        /* --- Smooth Entrance Animations --- */
-        @keyframes fadeInUp {
-            from { opacity: 0; transform: translateY(30px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        @keyframes float {
-            0% { transform: translateY(0px) rotate(0deg); }
-            50% { transform: translateY(-15px) rotate(2deg); }
-            100% { transform: translateY(0px) rotate(0deg); }
-        }
-
-        @keyframes meshMove {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
+        /* Light Theme (Sunrise / Premium Soft Sage) */
+        body.sunrise-active {
+            --bg: #dce3d6; /* Доош гүйлгэх үед тансаг цайвар ногоон болно */
+            --text: #111a14; /* Very dark rich green-black for text */
+            --text-secondary: rgba(17, 26, 20, 0.6);
+            --surface: rgba(255, 255, 255, 0.4);
+            --border: rgba(0, 0, 0, 0.06);
+            --accent: #2e7d32;
+            --accent-glow: rgba(46, 125, 50, 0.15);
+            --sun-glow: rgba(255, 245, 220, 0.6); /* Soft morning light */
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; }
 
+        html { scroll-behavior: smooth; }
+
         body {
             font-family: var(--sans);
-            background: var(--bg);
+            background-color: var(--bg);
             color: var(--text);
             line-height: 1.6;
             overflow-x: hidden; 
             -webkit-font-smoothing: antialiased;
+            /* Уусгалтыг илүү удаан, натурал болгох (3 секунд) */
+            transition: background-color 3s ease-in-out, color 3s ease-in-out;
         }
 
-        /* --- Animated Mesh Background --- */
-        .background-canvas {
+        /* --- Wave Glow Background (Доороос уусах) --- */
+        .sun-wave {
             position: fixed;
-            inset: 0;
+            bottom: -100vh;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: linear-gradient(to top, var(--sun-glow) 0%, transparent 100%);
             z-index: -1;
-            background: radial-gradient(circle at 20% 20%, var(--bg-accent) 0%, transparent 40%),
-                        radial-gradient(circle at 80% 80%, #051a2e 0%, transparent 40%);
-            background-size: 200% 200%;
-            animation: meshMove 15s ease infinite;
-        }
-
-        .page {
-            max-width: 900px;
-            margin: 0 auto;
-            padding: 100px 24px 200px 24px; /* Extra bottom padding for scrolling */
-            position: relative;
-            z-index: 10; 
-        }
-
-        /* --- Photorealistic Canvas Flowers --- */
-        .flower-realistic {
-            position: fixed;
-            top: 25vh;
-            z-index: 0;
+            /* Долгионы уусгалтыг мөн адил удаашруулсан */
+            transition: bottom 3.5s cubic-bezier(0.25, 1, 0.5, 1), background 3s ease-in-out;
             pointer-events: none;
-            width: 250px;
-            filter: drop-shadow(0 20px 30px rgba(0,0,0,0.8));
-            opacity: 0; /* Hidden until image fully processes */
-            transition: opacity 1s ease;
         }
 
-        /* Left Flower angled at 40 degrees inwards */
-        .flower-l {
-            left: -80px;
-            transform-origin: bottom center;
-            transform: rotate(40deg);
+        body.sunrise-active .sun-wave {
+            bottom: 0; 
         }
 
-        /* Right Flower flipped and angled at -40 degrees inwards */
-        .flower-r {
-            right: -80px;
-            transform-origin: bottom center;
-            transform: scaleX(-1) rotate(40deg);
+        /* --- Scroll Reveal Animations (Apple Style) --- */
+        .reveal {
+            opacity: 0;
+            transform: translateY(40px);
+            transition: all 1.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .reveal.active {
+            opacity: 1;
+            transform: translateY(0);
         }
 
-        /* --- Hero Section --- */
-        .hero {
-            text-align: center;
-            margin-bottom: 80px;
-            animation: fadeInUp 1s ease forwards;
-        }
-
-        .logo-container {
-            position: relative;
-            display: inline-block;
-            margin-bottom: 40px;
-        }
-
-        .logo-wrap {
-            width: 220px; 
-            height: 220px;
-            background: linear-gradient(135deg, var(--surface), var(--surface-hover));
-            border-radius: 50%;
+        /* --- 1. Intro Screen (Teaser) --- */
+        .intro-screen {
+            height: 100vh;
+            width: 100%;
             display: flex;
+            flex-direction: column;
             align-items: center;
             justify-content: center;
-            animation: float 6s ease-in-out infinite;
-            filter: drop-shadow(0 0 30px var(--accent-glow));
-            font-family: var(--serif);
-            font-size: 3rem;
-            color: var(--accent);
-            border: 2px solid var(--border);
+            text-align: center;
+            position: relative;
         }
 
-        .event-tag {
-            font-size: 12px;
-            text-transform: uppercase;
-            letter-spacing: 3px;
-            color: var(--accent);
-            margin-bottom: 16px;
-            display: block;
-            font-weight: 600;
+        .intro-title {
+            font-family: var(--block);
+            font-size: clamp(60px, 12vw, 150px);
+            font-weight: 900;
+            letter-spacing: 2px;
+            margin-bottom: 20px;
+            background: linear-gradient(180deg, #fff 0%, rgba(255,255,255,0.3) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            opacity: 0;
+            animation: slowFade 1.5s ease forwards 0.2s;
         }
 
-        h1.main-title {
-            font-family: var(--serif);
-            font-size: clamp(48px, 8vw, 84px);
-            line-height: 0.9;
-            letter-spacing: -2px;
-        }
-
-        h1.main-title em {
-            font-style: italic;
-            background: linear-gradient(90deg, #fff, var(--accent));
+        body.sunrise-active .intro-title {
+            background: linear-gradient(180deg, var(--text) 0%, rgba(17,26,20,0.4) 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
 
-        /* --- Info Grid --- */
-        .meta-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 16px;
-            margin-bottom: 80px;
-            animation: fadeInUp 1s ease 0.2s forwards;
-            opacity: 0;
+        @keyframes slowFade {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
-        .meta-item {
-            background: var(--surface);
-            border: 1px solid var(--border);
-            padding: 24px;
-            border-radius: 20px;
-            backdrop-filter: blur(10px);
-            transition: all 0.3s ease;
-        }
-
-        .meta-item:hover {
-            border-color: var(--accent);
-            transform: translateY(-5px);
-            background: var(--surface-hover);
-        }
-
-        .meta-label {
-            font-size: 10px;
-            text-transform: uppercase;
-            color: var(--text-secondary);
-            display: block;
-            margin-bottom: 8px;
-            letter-spacing: 1px;
-        }
-
-        .meta-value {
-            font-size: 18px;
-            font-weight: 500;
-        }
-
-        /* --- Timeline --- */
-        .section-title {
-            font-family: var(--serif);
-            font-size: 32px;
-            margin-bottom: 40px;
-            text-align: center;
-        }
-
-        .timeline {
+        .scroll-indicator {
+            position: absolute;
+            bottom: 60px;
             display: flex;
             flex-direction: column;
-            gap: 12px;
-        }
-
-        .t-row {
-            display: grid;
-            grid-template-columns: 180px 1fr;
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: 24px;
-            padding: 8px;
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            cursor: pointer;
-            backdrop-filter: blur(5px);
-        }
-
-        .t-row:hover {
-            transform: scale(1.02);
-            background: rgba(52, 199, 89, 0.05);
-            border-color: rgba(52, 199, 89, 0.3);
-            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
-        }
-
-        .t-time {
-            padding: 20px;
-            display: flex;
             align-items: center;
-        }
-
-        .time-badge {
-            background: var(--bg);
-            padding: 8px 16px;
-            border-radius: 12px;
-            font-weight: 600;
-            font-size: 14px;
-            color: var(--accent);
-            border: 1px solid var(--border);
-        }
-
-        .t-content {
-            padding: 20px;
-            border-left: 1px solid var(--border);
-        }
-
-        .t-name {
-            font-size: 18px;
-            font-weight: 600;
-            margin-bottom: 8px;
-        }
-
-        .t-desc {
-            font-size: 14px;
+            gap: 20px;
+            font-size: 12px;
             color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 4px;
+            opacity: 0;
+            animation: pulse 2.5s infinite, slowFade 1.5s ease forwards 1s;
         }
 
-        .sub-event {
-            margin-top: 15px;
-            padding-left: 15px;
-            border-left: 2px solid var(--accent);
-            font-size: 14px;
-            margin-bottom: 10px;
+        @keyframes pulse {
+            0% { transform: translateY(0); opacity: 0.3; }
+            50% { transform: translateY(8px); opacity: 0.8; }
+            100% { transform: translateY(0); opacity: 0.3; }
         }
 
-        /* --- CTA Buttons --- */
+        .scroll-line {
+            width: 1px;
+            height: 50px;
+            background: linear-gradient(to bottom, var(--text-secondary), transparent);
+        }
+
+        /* --- 2. Main Content Container --- */
+        .page {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 80px 40px 100px 40px;
+            position: relative;
+            z-index: 10; 
+        }
+
+        /* --- Hero Section --- */
+        .hero {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            margin-bottom: 120px;
+        }
+
+        .hero h2 {
+            font-family: var(--serif);
+            font-size: clamp(36px, 5vw, 64px);
+            font-weight: 500;
+            line-height: 1.1;
+            margin-bottom: 30px;
+            text-transform: none;
+            letter-spacing: normal;
+        }
+
+        .hero h2 em {
+            font-style: italic;
+            color: var(--accent);
+        }
+
+        .hero-desc {
+            font-size: 18px;
+            color: var(--text-secondary);
+            max-width: 600px;
+            margin-bottom: 50px;
+            line-height: 1.8;
+            font-weight: 300;
+        }
+
         .cta-wrap {
             display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
             justify-content: center;
-            gap: 20px;
-            margin-top: 60px;
         }
 
         .btn {
-            padding: 18px 40px;
+            padding: 16px 36px;
             border-radius: 100px;
             text-decoration: none;
-            font-weight: 600;
-            transition: all 0.3s ease;
-            font-size: 16px;
-            display: inline-flex;
-            align-items: center;
-            gap: 10px;
+            font-weight: 500;
+            transition: all 0.4s ease;
+            font-size: 15px;
             cursor: pointer;
-            border: none;
+            border: 1px solid transparent;
+            display: inline-block;
+            font-family: var(--sans);
+            letter-spacing: 0.5px;
         }
 
         .btn-primary {
-            background: var(--accent);
-            color: #000;
-            box-shadow: 0 10px 30px var(--accent-glow);
+            background: var(--text);
+            color: var(--bg);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
         }
 
         .btn-primary:hover {
-            transform: translateY(-3px) scale(1.05);
-            box-shadow: 0 15px 40px var(--accent-glow);
+            transform: translateY(-2px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.15);
+            opacity: 0.9;
         }
 
         .btn-secondary {
-            background: var(--surface);
-            border: 1px solid var(--border);
-            color: white;
+            background: transparent;
+            border-color: var(--border);
+            color: var(--text);
         }
 
         .btn-secondary:hover {
-            background: var(--surface-hover);
+            background: var(--surface);
+            border-color: var(--text-secondary);
+        }
+
+        /* --- Horizontal Info Bar --- */
+        .info-bar {
+            display: flex;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 40px;
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            gap: 40px;
+            margin-bottom: 120px;
+            flex-wrap: wrap;
+            justify-content: space-between;
+        }
+
+        .info-block {
+            flex: 1;
+            min-width: 150px;
+            text-align: center;
+        }
+
+        .info-label {
+            font-size: 11px;
+            text-transform: uppercase;
+            color: var(--text-secondary);
+            letter-spacing: 3px;
+            margin-bottom: 15px;
+            display: block;
+        }
+
+        .info-value {
+            font-family: var(--serif);
+            font-size: 26px;
+            font-weight: 500;
+            color: var(--text);
+        }
+
+        /* --- Modern Schedule Grid --- */
+        .section-header {
+            font-family: var(--serif);
+            font-weight: 500;
+            font-size: 42px;
+            margin-bottom: 60px;
+            text-align: center;
+            text-transform: none;
+            letter-spacing: normal;
+        }
+
+        .schedule-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 20px;
+        }
+
+        .schedule-card {
+            background: transparent;
+            border-bottom: 1px solid var(--border);
+            padding: 40px 20px;
+            transition: all 0.4s ease;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .schedule-card:hover {
+            background: var(--surface);
+            border-radius: 16px;
+            border-bottom-color: transparent;
+        }
+
+        @media (min-width: 768px) {
+            .schedule-card {
+                flex-direction: row;
+                align-items: flex-start;
+                gap: 50px;
+            }
+            .s-time-wrap { min-width: 140px; }
+        }
+
+        .s-time {
+            font-family: var(--sans);
+            font-size: 16px;
+            font-weight: 500;
+            color: var(--accent);
+            display: block;
+            margin-bottom: 10px;
+            letter-spacing: 1px;
+        }
+
+        .s-title {
+            font-family: var(--serif);
+            font-size: 26px;
+            font-weight: 500;
+            margin-bottom: 15px;
+            color: var(--text);
+            text-transform: none;
+            letter-spacing: normal;
+        }
+
+        .s-desc {
+            font-size: 16px;
+            color: var(--text-secondary);
+            line-height: 1.7;
+            font-weight: 300;
+        }
+
+        .s-sub {
+            margin-top: 20px;
+            font-size: 14px;
+            color: var(--text-secondary);
+            font-weight: 300;
+        }
+
+        .s-sub strong {
+            color: var(--text);
+            font-weight: 500;
         }
 
         /* --- Footer --- */
         footer {
-            margin-top: 100px;
+            margin-top: 150px;
             text-align: center;
-            padding: 40px;
-            border-top: 1px solid var(--border);
+            padding: 60px 20px;
             color: var(--text-secondary);
             font-size: 13px;
+            letter-spacing: 0.5px;
         }
 
-        /* --- Full Document Modal Custom Style --- */
+        /* --- Geometric Blooming Flowers --- */
+        @keyframes bloom {
+            0% { opacity: 0; transform: scale(0) rotate(0deg); }
+            15% { opacity: 0.8; transform: scale(1.2) rotate(45deg); }
+            30% { opacity: 0.5; transform: scale(1) rotate(60deg); }
+            100% { opacity: 0; transform: scale(1) rotate(90deg); }
+        }
+
+        .flower {
+            position: absolute;
+            pointer-events: none; 
+            z-index: 1;
+            width: 140px;
+            height: 140px;
+            opacity: 0;
+            transform-origin: center;
+            animation: bloom 4.5s ease-out forwards;
+        }
+
+        .flower svg { width: 100%; height: 100%; }
+
+        /* --- Strict Document Modal --- */
         #modal {
             display: none;
             position: fixed;
             inset: 0;
-            background: rgba(0,0,0,0.8);
-            backdrop-filter: blur(10px);
+            background: rgba(0,0,0,0.7);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
             z-index: 1000;
             align-items: center;
             justify-content: center;
             padding: 20px;
         }
 
-        /* Formatted strictly as a formal document based on user specs */
+        /* Academic/Official specs strictly applied here */
         .document-card {
             font-family: Arial, sans-serif;
             font-size: 12pt;
             line-height: 1.15;
             background: #ffffff;
             color: #000000;
-            /* Margins: 2cm Top/Bottom, 3cm Left, 1.5cm Right */
+            /* Exactly: 2cm Top/Bottom, 3cm Left, 1.5cm Right */
             padding: 2cm 1.5cm 2cm 3cm; 
             max-width: 850px;
             width: 100%;
             max-height: 90vh;
             overflow-y: auto;
-            border-radius: 8px;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+            border-radius: 4px; 
+            box-shadow: 0 30px 60px rgba(0,0,0,0.3);
             position: relative;
         }
 
         .document-card h1.doc-title {
             text-align: center;
-            font-size: 16pt;
-            margin-bottom: 10px;
+            font-size: 14pt;
+            margin-bottom: 15px;
             font-family: Arial, sans-serif;
             font-weight: bold;
         }
         
         .document-card h2.doc-heading {
             font-size: 12pt;
-            border-left: 4px solid var(--accent);
-            padding-left: 10px;
             margin-top: 25px;
             margin-bottom: 10px;
             font-family: Arial, sans-serif;
             font-weight: bold;
+            text-transform: uppercase;
         }
 
         .document-card p, .document-card li {
@@ -368,24 +443,12 @@
         }
 
         .document-card ul {
-            padding-left: 25px;
-        }
-
-        .header-approval {
-            display: flex;
-            justify-content: flex-end;
-            margin-bottom: 30px;
-            text-align: left;
-        }
-
-        .approval-text {
-            font-weight: bold;
-            text-transform: uppercase;
+            padding-left: 20px;
         }
 
         .organizer {
             text-align: center;
-            margin-bottom: 30px;
+            margin-bottom: 40px;
             font-style: italic;
         }
 
@@ -396,19 +459,10 @@
         }
 
         .document-card th, .document-card td {
-            border: 1px solid #333;
-            padding: 8px;
+            border: 1px solid #000;
+            padding: 10px;
             text-align: left;
-        }
-
-        .footer-signatures {
-            margin-top: 50px;
-            display: flex;
-            justify-content: space-between;
-        }
-
-        .signature-block {
-            width: 45%;
+            font-size: 11pt;
         }
 
         .close-modal-btn {
@@ -417,127 +471,126 @@
             text-align: center;
         }
 
+        .btn-modal {
+            background: #0C0C0C;
+            color: #fff;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 100px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
         @media (max-width: 768px) {
-            .meta-grid { grid-template-columns: 1fr; }
-            .t-row { grid-template-columns: 1fr; }
-            .t-content { border-left: none; border-top: 1px solid var(--border); }
-            .flower-realistic { width: 140px; }
+            .page { padding: 40px 20px; }
+            .info-bar { flex-direction: column; gap: 30px; padding: 30px; }
             .document-card { padding: 30px 20px; } 
         }
     </style>
 </head>
 <body>
 
-<div class="background-canvas"></div>
+<!-- Sunrise Glow Effect (Доороос уусах долгион) -->
+<div class="sun-wave"></div>
 
-<!-- Realistic Canvas Elements (replaces SVGs) -->
-<canvas id="canvas-left" class="flower-realistic flower-l"></canvas>
-<canvas id="canvas-right" class="flower-realistic flower-r"></canvas>
+<!-- 1. Intro Screen (Teaser) -->
+<div class="intro-screen">
+    <h1 class="intro-title">PERPETUA</h1>
+    <div class="scroll-indicator">
+        Доош гүйлгэх
+        <div class="scroll-line"></div>
+    </div>
+</div>
 
+<!-- 2. Main Content Pages -->
 <div class="page">
-    <header class="hero">
-        <div class="logo-container">
-            <div class="logo-wrap">
-                P
-            </div>
+    <header class="hero reveal">
+        <h2>Нээлтийн <em>Хөтөлбөр</em></h2>
+        <p class="hero-desc">МУИС-ийн оюутнуудын ногоон хөгжил, тогтвортой шилжилтийн талаарх мэдлэг, бүтээлч санаачилга, төсөл боловсруулах ур чадварыг дэмжих уралдааны албан ёсны нээлт.</p>
+        
+        <div class="cta-wrap">
+            <a href="https://forms.gle/eu1u39CYRS789gAz5" target="_blank" class="btn btn-primary">Одоо бүртгүүлэх</a>
+            <button class="btn btn-secondary" onclick="openModal()">Удирдамж үзэх</button>
         </div>
-        <span class="event-tag">Ирээдүйг хамтдаа</span>
-        <h1 class="main-title">Нээлтийн<br><em>хөтөлбөр</em></h1>
     </header>
 
-    <section class="meta-grid">
-        <div class="meta-item">
-            <span class="meta-label">Огноо</span>
-            <div class="meta-value">2026.05.10</div>
+    <section class="info-bar reveal">
+        <div class="info-block">
+            <span class="info-label">Огноо</span>
+            <div class="info-value">2026.05.10</div>
         </div>
-        <div class="meta-item">
-            <span class="meta-label">Цаг</span>
-            <div class="meta-value">10:00 — 14:00</div>
+        <div class="info-block">
+            <span class="info-label">Цаг</span>
+            <div class="info-value">10:00 — 14:00</div>
         </div>
-        <div class="meta-item">
-            <span class="meta-label">Байршил</span>
-            <div class="meta-value">E-Mart, 7-р давхар</div>
+        <div class="info-block">
+            <span class="info-label">Байршил</span>
+            <div class="info-value">E-Mart, 7-р давхар</div>
         </div>
     </section>
 
-    <h2 class="section-title">Үйл ажиллагааны дараалал</h2>
+    <h2 class="section-header reveal">Хөтөлбөрийн хуваарь</h2>
 
-    <div class="timeline">
-        <div class="t-row">
-            <div class="t-time"><span class="time-badge">10:00</span></div>
-            <div class="t-content">
-                <div class="t-name">Уралдааны бүртгэл</div>
-                <div class="t-desc">Оролцогчдыг хүлээн авч мандат олгох</div>
+    <div class="schedule-grid">
+        <div class="schedule-card reveal">
+            <div class="s-time-wrap"><span class="s-time">10:00 — 10:30</span></div>
+            <div>
+                <h3 class="s-title">Уралдааны бүртгэл</h3>
+                <p class="s-desc">Оролцогчдыг хүлээн авч мандат олгох, суудал эзлүүлэх.</p>
             </div>
         </div>
 
-        <div class="t-row">
-            <div class="t-time"><span class="time-badge">10:30</span></div>
-            <div class="t-content">
-                <div class="t-name">Албан ёсны нээлт</div>
-                <div class="t-desc">Зочдын мэндчилгээ ба Perpetua төслийн танилцуулга</div>
+        <div class="schedule-card reveal">
+            <div class="s-time-wrap"><span class="s-time">10:30 — 11:00</span></div>
+            <div>
+                <h3 class="s-title">Албан ёсны нээлт</h3>
+                <p class="s-desc">Зочдын мэндчилгээ ба Perpetua төслийн ерөнхий танилцуулга.</p>
             </div>
         </div>
 
-        <div class="t-row">
-            <div class="t-time"><span class="time-badge">11:00</span></div>
-            <div class="t-content">
-                <div class="t-name">Ногоон эдийн засаг илтгэлүүд</div>
-                <div class="sub-event"><b>11:15</b> — Монголын ногоон эдийн засгийн боломж</div>
-                <div class="sub-event"><b>11:30</b> — Эрчим хүчний шилжилтийн бодит замнал</div>
+        <div class="schedule-card reveal">
+            <div class="s-time-wrap"><span class="s-time">11:00 — 12:30</span></div>
+            <div>
+                <h3 class="s-title">Ногоон эдийн засаг</h3>
+                <p class="s-desc">Салбарын мэргэжилтнүүдийн хуваалцах туршлага, санаачилгууд.</p>
+                <div class="s-sub">
+                    <strong>11:15</strong> — Монголын ногоон эдийн засгийн боломж<br><br>
+                    <strong>11:30</strong> — Эрчим хүчний шилжилтийн бодит замнал
+                </div>
             </div>
         </div>
 
-        <div class="t-row">
-            <div class="t-time"><span class="time-badge">12:30</span></div>
-            <div class="t-content">
-                <div class="t-name">Бизнес ба Санхүүжилт</div>
-                <div class="sub-event"><b>12:45</b> — ESG сан ба ногоон зээлийн боломжууд</div>
-                <div class="sub-event"><b>13:00</b> — Ногоон хөгжил ба ирээдүйн карьер</div>
+        <div class="schedule-card reveal">
+            <div class="s-time-wrap"><span class="s-time">12:30 — 13:25</span></div>
+            <div>
+                <h3 class="s-title">Бизнес ба Санхүүжилт</h3>
+                <p class="s-desc">Тогтвортой санхүүжилт болон оюутнуудын ирээдүйн карьерын боломжууд.</p>
+                <div class="s-sub">
+                    <strong>12:45</strong> — ESG сан ба ногоон зээлийн боломжууд<br><br>
+                    <strong>13:00</strong> — Ногоон хөгжил ба ирээдүйн карьер
+                </div>
             </div>
         </div>
 
-        <div class="t-row">
-            <div class="t-time"><span class="time-badge">13:25</span></div>
-            <div class="t-content">
-                <div class="t-name">Асуулт хариулт</div>
-                <div class="t-desc">Зочид болон менторуудаас зөвлөгөө авах чөлөөт цаг</div>
-            </div>
-        </div>
-        
-        <!-- Added extra rows to demonstrate scrolling effect clearly -->
-        <div class="t-row">
-            <div class="t-time"><span class="time-badge">14:00</span></div>
-            <div class="t-content">
-                <div class="t-name">Хаалт</div>
-                <div class="t-desc">Үйл ажиллагааны албан ёсны хаалт, дурсгалын зураг авалт</div>
+        <div class="schedule-card reveal">
+            <div class="s-time-wrap"><span class="s-time">13:25 — 14:00</span></div>
+            <div>
+                <h3 class="s-title">Хаалт & Чөлөөт ярилцлага</h3>
+                <p class="s-desc">Зочид болон менторуудаас зөвлөгөө авах чөлөөт цаг. Үйл ажиллагааны албан ёсны хаалт.</p>
             </div>
         </div>
     </div>
 
-    <div class="cta-wrap">
-        <button class="btn btn-secondary" onclick="openModal()">Удирдамж үзэх</button>
-        <a href="https://forms.gle/eu1u39CYRS789gAz5" target="_blank" class="btn btn-primary">Одоо бүртгүүлэх</a>
-    </div>
-
-    <footer>
+    <footer class="reveal">
         <p>Зохион байгуулагч: МУИС-ийн Бизнесийн сургуулийн оюутны зөвлөл</p>
-        <p style="margin-top: 10px; opacity: 0.5;">&copy; 2026 Perpetua Event. All rights reserved.</p>
+        <p style="margin-top: 10px; opacity: 0.4;">&copy; 2026 Perpetua Event. Бүх эрх хуулиар хамгаалагдсан.</p>
     </footer>
 </div>
 
-<!-- Modal Overlay -->
+<!-- Document Modal -->
 <div id="modal" onclick="closeModal()">
     <div class="document-card" onclick="event.stopPropagation()">
         
-        <div class="header-approval">
-            <div class="approval-text">
-                БАТЛАВ.<br>
-                МУИС-ИЙН БИЗНЕСИЙН СУРГУУЛИЙН<br>
-                ЗАХИРАЛ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Н.БАТНАСАН
-            </div>
-        </div>
-
         <h1 class="doc-title">“НОГООН ХӨГЖИЛ 2026” ТӨСЛИЙН УРАЛДААНЫ УДИРДАМЖ</h1>
         <div class="organizer">ЗОХИОН БАЙГУУЛАГЧ: МУИС-ийн Бизнесийн сургуулийн Оюутны зөвлөл</div>
 
@@ -611,23 +664,87 @@
         Утас: +976 9119-7215<br>
         И-мэйл: businessnumoz@gmail.com</p>
 
-        <div class="footer-signatures">
-            <div class="signature-block">
-                БОЛОВСРУУЛСАН:<br>ОЮУТНЫ ЗӨВЛӨЛИЙН ГИШҮҮН<br><br><strong>Э.ТЭРГЭЛ</strong>
-            </div>
-            <div class="signature-block" style="text-align: right;">
-                ХЯНАСАН:<br>ОЮУТНЫ ЗӨВЛӨЛИЙН ДАРГА<br><br><strong>Г.ЭНХЖИН</strong>
-            </div>
-        </div>
-
         <div class="close-modal-btn">
-            <button class="btn btn-primary" onclick="closeModal()">Хаах (Close)</button>
+            <button class="btn-modal" onclick="closeModal()">Хаах</button>
         </div>
     </div>
 </div>
 
 <script>
-    // --- Modal Logic ---
+    // --- 1. Apple-style Scroll Reveal Logic ---
+    function reveal() {
+        const reveals = document.querySelectorAll('.reveal');
+        for (let i = 0; i < reveals.length; i++) {
+            const windowHeight = window.innerHeight;
+            const elementTop = reveals[i].getBoundingClientRect().top;
+            const elementVisible = 100; // Trigger point
+
+            if (elementTop < windowHeight - elementVisible) {
+                reveals[i].classList.add('active');
+            }
+        }
+    }
+    window.addEventListener('scroll', reveal);
+    reveal(); // Trigger once on load
+
+    // --- 2. Sunrise Effect Trigger (Premium Soft Sage) ---
+    window.addEventListener('scroll', () => {
+        // Trigger background change when scrolling down 25% of viewport
+        if (window.scrollY > window.innerHeight * 0.25) {
+            document.body.classList.add('sunrise-active');
+        } else {
+            document.body.classList.remove('sunrise-active');
+        }
+    });
+
+    // --- 3. Original Blooming SVG Flowers Logic ---
+    let lastScroll = window.scrollY;
+    
+    window.addEventListener('scroll', () => {
+        const currentScroll = window.scrollY;
+        
+        // Bloom a new flower every 180 pixels scrolled
+        if (Math.abs(currentScroll - lastScroll) > 180) {
+            createFlower(currentScroll);
+            lastScroll = currentScroll;
+        }
+    });
+
+    function createFlower(scrollY) {
+        // Don't spawn flowers in the very top teaser area
+        if(scrollY < window.innerHeight * 0.4) return;
+
+        const flower = document.createElement('div');
+        flower.className = 'flower';
+        
+        // Spawn either on the far left or far right edges
+        const isLeft = Math.random() > 0.5;
+        if (isLeft) {
+            flower.style.left = '-30px';
+        } else {
+            flower.style.right = '-30px';
+        }
+        
+        // Spawn slightly offset from current scroll
+        const randomYOffset = Math.random() * (window.innerHeight * 0.8);
+        flower.style.top = `${scrollY + randomYOffset}px`;
+        
+        flower.innerHTML = `
+            <svg viewBox="0 0 100 100">
+                <circle cx="50" cy="50" r="6" fill="var(--accent)" />
+                <path d="M50 42 C 30 0, 70 0, 50 42 Z" fill="rgba(46, 125, 50, 0.1)" stroke="var(--accent)" stroke-width="1.5"/>
+                <path d="M50 58 C 30 100, 70 100, 50 58 Z" fill="rgba(46, 125, 50, 0.1)" stroke="var(--accent)" stroke-width="1.5"/>
+                <path d="M42 50 C 0 30, 0 70, 42 50 Z" fill="rgba(46, 125, 50, 0.1)" stroke="var(--accent)" stroke-width="1.5"/>
+                <path d="M58 50 C 100 30, 100 70, 58 50 Z" fill="rgba(46, 125, 50, 0.1)" stroke="var(--accent)" stroke-width="1.5"/>
+            </svg>
+        `;
+
+        document.body.appendChild(flower);
+
+        setTimeout(() => { flower.remove(); }, 4500);
+    }
+
+    // --- 4. Strict Modal Logic ---
     function openModal() {
         document.getElementById('modal').style.display = 'flex';
         document.body.style.overflow = 'hidden'; 
@@ -637,115 +754,6 @@
         document.getElementById('modal').style.display = 'none';
         document.body.style.overflow = 'auto'; 
     }
-
-    // --- Extreme Photorealism Logic: Sprite Extraction & Interpolation ---
-    const img = new Image();
-    img.crossOrigin = "Anonymous"; // Helps prevent CORS issues
-    img.src = 'image_768053.jpg';  // Your uploaded real flower sequence
-    
-    // Assuming the sequence has 6 frames horizontally
-    const TOTAL_FRAMES = 6;
-    const processedFrames = [];
-    
-    const canvasL = document.getElementById('canvas-left');
-    const ctxL = canvasL.getContext('2d');
-    const canvasR = document.getElementById('canvas-right');
-    const ctxR = canvasR.getContext('2d');
-
-    img.onload = () => {
-        // Calculate dimensions of a single frame
-        const frameWidth = img.width / TOTAL_FRAMES;
-        const frameHeight = img.height;
-
-        canvasL.width = frameWidth;
-        canvasL.height = frameHeight;
-        canvasR.width = frameWidth;
-        canvasR.height = frameHeight;
-
-        // Step 1: Extract, Chroma-key, and Cache every frame
-        for (let i = 0; i < TOTAL_FRAMES; i++) {
-            const offCanvas = document.createElement('canvas');
-            offCanvas.width = frameWidth;
-            offCanvas.height = frameHeight;
-            const offCtx = offCanvas.getContext('2d', { willReadFrequently: true });
-            
-            // Draw one specific frame from the JPG
-            offCtx.drawImage(img, i * frameWidth, 0, frameWidth, frameHeight, 0, 0, frameWidth, frameHeight);
-            
-            try {
-                // Pixel Manipulation: Remove White Background smoothly
-                const imgData = offCtx.getImageData(0, 0, frameWidth, frameHeight);
-                const data = imgData.data;
-                
-                for (let j = 0; j < data.length; j += 4) {
-                    const r = data[j];
-                    const g = data[j+1];
-                    const b = data[j+2];
-                    
-                    // If pixel is near-white (background of the image)
-                    if (r > 200 && g > 200 && b > 200) {
-                        // Feather the edge: 255 becomes transparent, darker gets slight opacity
-                        const avg = (r + g + b) / 3;
-                        const alpha = Math.max(0, 255 - ((avg - 200) * 4.5)); 
-                        data[j+3] = alpha; 
-                    }
-                }
-                offCtx.putImageData(imgData, 0, 0);
-            } catch (e) {
-                console.warn("Local CORS issue prevented background removal, but animation will still run.");
-            }
-            processedFrames.push(offCanvas);
-        }
-
-        // Show canvases once fully loaded
-        canvasL.style.opacity = '1';
-        canvasR.style.opacity = '1';
-        
-        updateFlowers(); // Initial draw
-    };
-
-    // Step 2: Draw frames with Alpha-Blend Interpolation
-    function drawBlendedFrame(ctx, canvas, progress) {
-        if (processedFrames.length === 0) return;
-
-        // Map progress (0 to 1) to exact frame index (0.0 to 5.0)
-        const exactFrame = progress * (TOTAL_FRAMES - 1);
-        const indexA = Math.floor(exactFrame);
-        const indexB = Math.min(TOTAL_FRAMES - 1, Math.ceil(exactFrame));
-        const blendFactor = exactFrame - indexA;
-
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        
-        // Draw Base Frame
-        ctx.globalAlpha = 1.0;
-        ctx.drawImage(processedFrames[indexA], 0, 0, canvas.width, canvas.height);
-        
-        // Draw Next Frame overlaid with opacity to fake 60FPS ultra-smooth motion
-        if (indexB > indexA && blendFactor > 0) {
-            ctx.globalAlpha = blendFactor;
-            ctx.drawImage(processedFrames[indexB], 0, 0, canvas.width, canvas.height);
-        }
-        ctx.globalAlpha = 1.0; // Reset
-    }
-
-    // Step 3: Link directly to Scroll 
-    function updateFlowers() {
-        const maxScroll = document.body.scrollHeight - window.innerHeight;
-        const scrollFraction = maxScroll > 0 ? Math.max(0, Math.min(1, window.scrollY / maxScroll)) : 0;
-        
-        // Left Flower: Blooms between 5% and 50% scroll
-        let leftProgress = (scrollFraction - 0.05) / 0.45;
-        leftProgress = Math.max(0, Math.min(1, leftProgress));
-        drawBlendedFrame(ctxL, canvasL, leftProgress);
-
-        // Right Flower: Staggered to bloom later (40% to 85% scroll)
-        let rightProgress = (scrollFraction - 0.40) / 0.45;
-        rightProgress = Math.max(0, Math.min(1, rightProgress));
-        drawBlendedFrame(ctxR, canvasR, rightProgress);
-    }
-
-    window.addEventListener('scroll', updateFlowers);
-    window.addEventListener('resize', updateFlowers);
 </script>
 
 </body>
