@@ -1,0 +1,505 @@
+/* --- Custom Fonts --- */
+/* Хэрэв хуучин "SOONER" фонтоо буцааж ашиглахыг хүсвэл 
+   доорх хэсгийн комментийг арилгаад (/* ... */) 
+   --intro-font хувьсагчийн утгыг 'SOONER' болгоно уу. */
+/* @font-face {
+    font-family: 'SOONER';
+    src: url('./sooner.otf') format('opentype');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+} 
+*/
+
+/* --- Premium CSS Variables --- */
+:root {
+    --bg: #0C0C0C; /* Шөнийн гүн хар/саарал өнгө */
+    --text: #f0f4ee;
+    --text-secondary: rgba(240, 244, 238, 0.5);
+    --surface: rgba(255, 255, 255, 0.04);
+    --border: rgba(255, 255, 255, 0.08);
+    --accent: #4ade80;
+    --accent-glow: rgba(74, 222, 128, 0.2);
+    
+    /* Шинэ тансаг фонт (Энд SOONER-ээр сольж болно) */
+    --intro-font: 'Cinzel', serif; 
+    --serif: 'Playfair Display', Georgia, serif; 
+    --sans: 'Outfit', -apple-system, sans-serif; 
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { scroll-behavior: smooth; }
+
+body {
+    font-family: var(--sans);
+    background-color: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+    overflow-x: hidden; 
+    -webkit-font-smoothing: antialiased;
+}
+
+/* --- Spotlight / Flashlight Effect --- */
+.spotlight {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    pointer-events: none;
+    z-index: 900;
+    background: radial-gradient(
+        circle 700px at var(--cursor-x, 50vw) var(--cursor-y, 50vh),
+        rgba(46, 125, 50, 0.15) 0%,
+        rgba(12, 12, 12, 0.4) 30%,
+        rgba(12, 12, 12, 0.9) 60%,
+        #0C0C0C 100%
+    );
+    transition: opacity 0.5s ease;
+}
+
+@media (hover: none) and (pointer: coarse) {
+    .spotlight {
+        display: none;
+    }
+}
+
+body.lights-on .spotlight {
+    opacity: 0; 
+}
+
+/* --- Light Switch Button --- */
+.light-switch {
+    position: fixed;
+    top: 30px;
+    right: 40px;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--text);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 1000;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(10px);
+}
+
+.light-switch:hover {
+    background: rgba(255, 255, 255, 0.1);
+    transform: scale(1.05);
+}
+
+.light-switch svg {
+    width: 22px;
+    height: 22px;
+    fill: currentColor;
+    transition: color 0.3s ease;
+}
+
+body.lights-on .light-switch svg {
+    color: var(--accent);
+}
+
+/* --- Scroll Reveal Animations (Apple Style) --- */
+.reveal {
+    opacity: 0;
+    transform: translateY(40px);
+    transition: all 1.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.reveal.active {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* --- 1. Intro Screen (Teaser) --- */
+.intro-screen {
+    height: 100vh;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    position: relative;
+}
+
+.intro-title {
+    font-family: var(--intro-font);
+    font-size: clamp(60px, 12vw, 150px);
+    font-weight: 800;
+    letter-spacing: 2px;
+    margin-bottom: 20px;
+    background: linear-gradient(180deg, #fff 0%, rgba(255,255,255,0.4) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    opacity: 0;
+    animation: slowFade 2s ease forwards 0.2s;
+}
+
+@keyframes slowFade {
+    from { opacity: 0; transform: translateY(15px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.scroll-indicator {
+    position: absolute;
+    bottom: 60px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+    font-size: 12px;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 4px;
+    opacity: 0;
+    animation: pulse 2.5s infinite, slowFade 1.5s ease forwards 1s;
+}
+
+@keyframes pulse {
+    0% { transform: translateY(0); opacity: 0.3; }
+    50% { transform: translateY(8px); opacity: 0.8; }
+    100% { transform: translateY(0); opacity: 0.3; }
+}
+
+.scroll-line {
+    width: 1px;
+    height: 50px;
+    background: linear-gradient(to bottom, var(--text-secondary), transparent);
+}
+
+/* --- 2. Main Content Container --- */
+.page {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 80px 40px 100px 40px;
+    position: relative;
+    z-index: 10; 
+}
+
+/* --- Hero Section --- */
+.hero {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    margin-bottom: 120px;
+}
+
+.hero h2 {
+    font-family: var(--serif);
+    font-size: clamp(36px, 5vw, 64px);
+    font-weight: 500;
+    line-height: 1.1;
+    margin-bottom: 30px;
+}
+
+.hero h2 em {
+    font-style: italic;
+    color: var(--accent);
+}
+
+.hero-desc {
+    font-size: 18px;
+    color: var(--text-secondary);
+    max-width: 600px;
+    margin-bottom: 50px;
+    line-height: 1.8;
+    font-weight: 300;
+}
+
+.cta-wrap {
+    display: flex;
+    gap: 15px;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.btn {
+    padding: 16px 36px;
+    border-radius: 100px;
+    text-decoration: none;
+    font-weight: 500;
+    transition: all 0.4s ease;
+    font-size: 15px;
+    cursor: pointer;
+    border: 1px solid transparent;
+    display: inline-block;
+    font-family: var(--sans);
+    letter-spacing: 0.5px;
+    position: relative;
+    z-index: 20;
+}
+
+.btn-primary {
+    background: var(--text);
+    color: var(--bg);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 15px 40px rgba(0,0,0,0.15);
+    opacity: 0.9;
+}
+
+.btn-secondary {
+    background: transparent;
+    border-color: var(--border);
+    color: var(--text);
+}
+
+.btn-secondary:hover {
+    background: var(--surface);
+    border-color: var(--text-secondary);
+}
+
+/* --- Horizontal Info Bar --- */
+.info-bar {
+    display: flex;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 40px;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    gap: 40px;
+    margin-bottom: 120px;
+    flex-wrap: wrap;
+    justify-content: space-between;
+}
+
+.info-block {
+    flex: 1;
+    min-width: 150px;
+    text-align: center;
+}
+
+.info-label {
+    font-size: 11px;
+    text-transform: uppercase;
+    color: var(--text-secondary);
+    letter-spacing: 3px;
+    margin-bottom: 15px;
+    display: block;
+}
+
+.info-value {
+    font-family: var(--serif);
+    font-size: 26px;
+    font-weight: 500;
+    color: var(--text);
+}
+
+/* --- Modern Schedule Grid --- */
+.section-header {
+    font-family: var(--serif);
+    font-weight: 500;
+    font-size: 42px;
+    margin-bottom: 60px;
+    text-align: center;
+}
+
+.schedule-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 20px;
+}
+
+.schedule-card {
+    background: transparent;
+    border-bottom: 1px solid var(--border);
+    padding: 40px 20px;
+    transition: all 0.4s ease;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+}
+
+.schedule-card:hover {
+    background: var(--surface);
+    border-radius: 16px;
+    border-bottom-color: transparent;
+}
+
+@media (min-width: 768px) {
+    .schedule-card {
+        flex-direction: row;
+        align-items: flex-start;
+        gap: 50px;
+    }
+    .s-time-wrap { min-width: 140px; }
+}
+
+.s-time {
+    font-family: var(--sans);
+    font-size: 16px;
+    font-weight: 500;
+    color: var(--accent);
+    display: block;
+    margin-bottom: 10px;
+    letter-spacing: 1px;
+}
+
+.s-title {
+    font-family: var(--serif);
+    font-size: 26px;
+    font-weight: 500;
+    margin-bottom: 15px;
+    color: var(--text);
+}
+
+.s-desc {
+    font-size: 16px;
+    color: var(--text-secondary);
+    line-height: 1.7;
+    font-weight: 300;
+}
+
+.s-sub {
+    margin-top: 20px;
+    font-size: 14px;
+    color: var(--text-secondary);
+    font-weight: 300;
+}
+
+.s-sub strong {
+    color: var(--text);
+    font-weight: 500;
+}
+
+/* --- Footer --- */
+footer {
+    margin-top: 150px;
+    text-align: center;
+    padding: 60px 20px;
+    color: var(--text-secondary);
+    font-size: 13px;
+    letter-spacing: 0.5px;
+}
+
+/* --- Geometric Blooming Flowers --- */
+@keyframes bloom {
+    0% { opacity: 0; transform: scale(0) rotate(0deg); }
+    15% { opacity: 0.8; transform: scale(1.2) rotate(45deg); }
+    30% { opacity: 0.5; transform: scale(1) rotate(60deg); }
+    100% { opacity: 0; transform: scale(1) rotate(90deg); }
+}
+
+.flower {
+    position: absolute;
+    pointer-events: none; 
+    z-index: 1; 
+    width: 140px;
+    height: 140px;
+    opacity: 0;
+    transform-origin: center;
+    animation: bloom 4.5s ease-out forwards;
+}
+
+.flower svg { width: 100%; height: 100%; }
+
+/* --- Strict Document Modal --- */
+#modal {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.8);
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    z-index: 2000; 
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
+/* Academic/Official specs strictly applied here */
+.document-card {
+    font-family: Arial, sans-serif;
+    font-size: 12pt;
+    line-height: 1.15;
+    background: #ffffff;
+    color: #000000;
+    /* Exactly: 2cm Top/Bottom, 3cm Left, 1.5cm Right */
+    padding: 2cm 1.5cm 2cm 3cm; 
+    max-width: 850px;
+    width: 100%;
+    max-height: 90vh;
+    overflow-y: auto;
+    border-radius: 4px; 
+    box-shadow: 0 30px 60px rgba(0,0,0,0.3);
+    position: relative;
+}
+
+.document-card h1.doc-title {
+    text-align: center;
+    font-size: 14pt;
+    margin-bottom: 15px;
+    font-family: Arial, sans-serif;
+    font-weight: bold;
+}
+
+.document-card h2.doc-heading {
+    font-size: 12pt;
+    margin-top: 25px;
+    margin-bottom: 10px;
+    font-family: Arial, sans-serif;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+.document-card p, .document-card li {
+    font-size: 12pt;
+    margin-bottom: 10px;
+    text-align: justify;
+}
+
+.document-card ul {
+    padding-left: 20px;
+}
+
+.organizer {
+    text-align: center;
+    margin-bottom: 40px;
+    font-style: italic;
+}
+
+.document-card table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 20px 0;
+}
+
+.document-card th, .document-card td {
+    border: 1px solid #000;
+    padding: 10px;
+    text-align: left;
+    font-size: 11pt;
+}
+
+.close-modal-btn {
+    display: block;
+    margin: 40px auto 0 auto;
+    text-align: center;
+}
+
+.btn-modal {
+    background: #0C0C0C;
+    color: #fff;
+    padding: 12px 30px;
+    border: none;
+    border-radius: 100px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+@media (max-width: 768px) {
+    .page { padding: 40px 20px; }
+    .info-bar { flex-direction: column; gap: 30px; padding: 30px; }
+    .document-card { padding: 30px 20px; } 
+}
