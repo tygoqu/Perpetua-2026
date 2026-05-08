@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="mn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Perpetua 2026 — Бүртгэл</title>
+    
+    <link rel="stylesheet" href="style.css">
+    
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;800&family=Outfit:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400;1,500&display=swap" rel="stylesheet">
+    
+    <style>
+        /* Бүртгэлийн хуудсанд зориулсан нэмэлт стилүүд */
+        .page-reg {
+            max-width: 700px;
+            margin: 0 auto;
+            padding: 40px 20px 100px 20px;
+            position: relative;
+            z-index: 10;
+        }
+
+        .header-reg {
+            text-align: center;
+            margin-bottom: 60px;
+            margin-top: 40px;
+        }
+
+        .logo-text {
+            font-family: var(--intro-font);
+            font-size: 28px;
+            letter-spacing: 5px;
+            color: var(--text);
+            text-decoration: none;
+            display: block;
+            margin-bottom: 10px;
+        }
+
+        .form-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 24px;
+            padding: 40px;
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            box-shadow: 0 40px 80px rgba(0,0,0,0.5);
+        }
+
+        .form-section {
+            margin-bottom: 40px;
+        }
+
+        .form-section h3 {
+            font-family: var(--serif);
+            font-size: 22px;
+            margin-bottom: 25px;
+            color: var(--accent);
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 10px;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        .label {
+            display: block;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            background: rgba(0,0,0,0.3);
+            border: 1px solid var(--border);
+            padding: 14px 18px;
+            border-radius: 12px;
+            color: var(--text);
+            font-family: var(--sans);
+            font-size: 15px;
+            transition: all 0.3s ease;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: var(--accent);
+            background: rgba(255,255,255,0.05);
+        }
+
+        .grid-members {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .submit-btn-wrap {
+            text-align: center;
+            margin-top: 30px;
+        }
+
+        #success-screen {
+            display: none;
+            text-align: center;
+            padding: 60px 20px;
+        }
+
+        #success-screen h2 {
+            font-family: var(--serif);
+            font-size: 36px;
+            color: var(--accent);
+            margin-bottom: 20px;
+        }
+
+        @media (max-width: 600px) {
+            .grid-members { grid-template-columns: 1fr; }
+            .form-card { padding: 25px; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="spotlight" id="spotlight"></div>
+
+<div class="page-reg">
+    <div class="header-reg reveal">
+        <a href="index.html" class="logo-text">PERPETUA</a>
+        <p style="color: var(--accent); font-style: italic; font-family: var(--serif);">Төслийн уралдааны бүртгэл</p>
+    </div>
+
+    <div class="form-card reveal" id="reg-form-container">
+        <form id="perpetuaRegForm">
+            <div class="form-section">
+                <h3>Төслийн мэдээлэл</h3>
+                <div class="input-group">
+                    <span class="label">Багийн нэр</span>
+                    <input type="text" required placeholder="Багийн нэрээ оруулна уу">
+                </div>
+                <div class="input-group">
+                    <span class="label">Төслийн чиглэл</span>
+                    <select required>
+                        <option value="" disabled selected>Сонгох...</option>
+                        <option>Агаарын чанар, амьдрах орчин</option>
+                        <option>Хог хаягдал, дахин боловсруулалт</option>
+                        <option>Ус, эрчим хүчний хэмнэлт</option>
+                        <option>Ногоон боловсрол, санхүү</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-section">
+                <h3>Багийн гишүүд</h3>
+                <div class="input-group">
+                    <span class="label">Багийн ахлагч (Нэр, Утас)</span>
+                    <div class="grid-members">
+                        <input type="text" required placeholder="Овог нэр">
+                        <input type="tel" required placeholder="Утасны дугаар">
+                    </div>
+                </div>
+                <div class="input-group">
+                    <span class="label">Гишүүн 2</span>
+                    <input type="text" required placeholder="Овог нэр">
+                </div>
+                <div class="input-group">
+                    <span class="label">Гишүүн 3</span>
+                    <input type="text" required placeholder="Овог нэр">
+                </div>
+            </div>
+
+            <div class="submit-btn-wrap">
+                <button type="submit" class="btn btn-primary">Бүртгүүлэх</button>
+            </div>
+        </form>
+    </div>
+
+    <div id="success-screen">
+        <h2>Амжилттай бүртгэгдлээ.</h2>
+        <p style="color: var(--text-secondary); margin-bottom: 40px;">Бид танай багийн мэдээллийг хянаад удахгүй хариу мэдэгдэх болно.</p>
+        <a href="index.html" class="btn btn-secondary">Нүүр хуудас руу буцах</a>
+    </div>
+
+    <footer>
+        <p>&copy; 2026 Perpetua. Бүх эрх хуулиар хамгаалагдсан.</p>
+    </footer>
+</div>
+
+<script>
+    // Spotlight effect
+    const spotlight = document.getElementById('spotlight');
+    document.addEventListener('mousemove', (e) => {
+        spotlight.style.setProperty('--cursor-x', `${e.clientX}px`);
+        spotlight.style.setProperty('--cursor-y', `${e.clientY}px`);
+    });
+
+    // Simple Form Logic
+    document.getElementById('perpetuaRegForm').onsubmit = function(e) {
+        e.preventDefault();
+        document.getElementById('reg-form-container').style.display = 'none';
+        document.getElementById('success-screen').style.display = 'block';
+    };
+
+    // Reveal animation
+    window.addEventListener('scroll', reveal);
+    function reveal() {
+        const reveals = document.querySelectorAll('.reveal');
+        for (let i = 0; i < reveals.length; i++) {
+            const windowHeight = window.innerHeight;
+            const elementTop = reveals[i].getBoundingClientRect().top;
+            if (elementTop < windowHeight - 100) {
+                reveals[i].classList.add('active');
+            }
+        }
+    }
+    reveal();
+</script>
+
+</body>
+</html>
