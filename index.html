@@ -3,8 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Perpetua 2026 — Нээлтийн Хөтөлбөр</title>
-    <!-- Premium Fonts: Cinzel for Intro, Playfair and Outfit for content -->
+    <title>Perpetua 2026 — Бүртгэл & Удирдамж</title>
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;800&family=Outfit:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400;1,500&display=swap" rel="stylesheet">
     
     <style>
@@ -219,6 +218,10 @@
             padding: 80px 40px 100px 40px;
             position: relative;
             z-index: 10; 
+            min-height: 50vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
         }
 
         /* --- Hero Section --- */
@@ -227,7 +230,6 @@
             flex-direction: column;
             align-items: center;
             text-align: center;
-            margin-bottom: 120px;
         }
 
         .hero h2 {
@@ -298,125 +300,11 @@
             border-color: var(--text-secondary);
         }
 
-        /* --- Horizontal Info Bar --- */
-        .info-bar {
-            display: flex;
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: 20px;
-            padding: 40px;
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-            gap: 40px;
-            margin-bottom: 120px;
-            flex-wrap: wrap;
-            justify-content: space-between;
-        }
-
-        .info-block {
-            flex: 1;
-            min-width: 150px;
-            text-align: center;
-        }
-
-        .info-label {
-            font-size: 11px;
-            text-transform: uppercase;
-            color: var(--text-secondary);
-            letter-spacing: 3px;
-            margin-bottom: 15px;
-            display: block;
-        }
-
-        .info-value {
-            font-family: var(--serif);
-            font-size: 26px;
-            font-weight: 500;
-            color: var(--text);
-        }
-
-        /* --- Modern Schedule Grid --- */
-        .section-header {
-            font-family: var(--serif);
-            font-weight: 500;
-            font-size: 42px;
-            margin-bottom: 60px;
-            text-align: center;
-        }
-
-        .schedule-grid {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 20px;
-        }
-
-        .schedule-card {
-            background: transparent;
-            border-bottom: 1px solid var(--border);
-            padding: 40px 20px;
-            transition: all 0.4s ease;
-            position: relative;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .schedule-card:hover {
-            background: var(--surface);
-            border-radius: 16px;
-            border-bottom-color: transparent;
-        }
-
-        @media (min-width: 768px) {
-            .schedule-card {
-                flex-direction: row;
-                align-items: flex-start;
-                gap: 50px;
-            }
-            .s-time-wrap { min-width: 140px; }
-        }
-
-        .s-time {
-            font-family: var(--sans);
-            font-size: 16px;
-            font-weight: 500;
-            color: var(--accent);
-            display: block;
-            margin-bottom: 10px;
-            letter-spacing: 1px;
-        }
-
-        .s-title {
-            font-family: var(--serif);
-            font-size: 26px;
-            font-weight: 500;
-            margin-bottom: 15px;
-            color: var(--text);
-        }
-
-        .s-desc {
-            font-size: 16px;
-            color: var(--text-secondary);
-            line-height: 1.7;
-            font-weight: 300;
-        }
-
-        .s-sub {
-            margin-top: 20px;
-            font-size: 14px;
-            color: var(--text-secondary);
-            font-weight: 300;
-        }
-
-        .s-sub strong {
-            color: var(--text);
-            font-weight: 500;
-        }
-
         /* --- Footer --- */
         footer {
-            margin-top: 150px;
+            margin-top: 100px;
             text-align: center;
-            padding: 60px 20px;
+            padding: 40px 20px;
             color: var(--text-secondary);
             font-size: 13px;
             letter-spacing: 0.5px;
@@ -539,27 +427,22 @@
 
         @media (max-width: 768px) {
             .page { padding: 40px 20px; }
-            .info-bar { flex-direction: column; gap: 30px; padding: 30px; }
             .document-card { padding: 30px 20px; } 
         }
     </style>
 </head>
 <body>
 
-<!-- Компьютер дээр хулгана дагах гэрэлтүүлэгч (Spotlight) -->
 <div class="spotlight" id="spotlight"></div>
 
-<!-- Гэрлийн унтраалга (Light Switch) -->
 <button class="light-switch" id="light-switch" title="Гэрэл асаах/унтраах">
     <svg viewBox="0 0 24 24">
         <path d="M12 2a7 7 0 0 0-7 7c0 2.38 1.19 4.47 3 5.74V17a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1v-2.26c1.81-1.27 3-3.36 3-5.74a7 7 0 0 0-7-7zm2 19h-4v1a1 1 0 0 0 1 1h2a1 1 0 0 0 1-1v-1z"/>
     </svg>
 </button>
 
-<!-- Sunrise Glow Effect (Доороос уусах долгион) -->
 <div class="sun-wave"></div>
 
-<!-- 1. Intro Screen (Teaser) -->
 <div class="intro-screen">
     <h1 class="intro-title">PERPETUA</h1>
     <div class="scroll-indicator">
@@ -568,84 +451,16 @@
     </div>
 </div>
 
-<!-- 2. Main Content Pages -->
 <div class="page">
     <header class="hero reveal">
-        <h2>Нээлтийн <em>Хөтөлбөр</em></h2>
-        <p class="hero-desc">МУИС-ийн оюутнуудын ногоон хөгжил, тогтвортой шилжилтийн талаарх мэдлэг, бүтээлч санаачилга, төсөл боловсруулах ур чадварыг дэмжих уралдааны албан ёсны нээлт.</p>
+        <h2>Төслийн <em>Уралдаан</em></h2>
+        <p class="hero-desc">МУИС-ийн оюутнуудын ногоон хөгжил, тогтвортой шилжилтийн талаарх мэдлэг, бүтээлч санаачилга, төсөл боловсруулах ур чадварыг дэмжих уралдаан.</p>
         
         <div class="cta-wrap">
-            <a href="https://forms.gle/eu1u39CYRS789gAz5" target="_blank" class="btn btn-primary">Одоо бүртгүүлэх</a>
+            <a href="https://perpetua-2026.vercel.app/reg" class="btn btn-primary">Одоо бүртгүүлэх</a>
             <button class="btn btn-secondary" onclick="openModal()">Удирдамж үзэх</button>
         </div>
     </header>
-
-    <section class="info-bar reveal">
-        <div class="info-block">
-            <span class="info-label">Огноо</span>
-            <div class="info-value">2026.05.10</div>
-        </div>
-        <div class="info-block">
-            <span class="info-label">Цаг</span>
-            <div class="info-value">10:00 — 14:00</div>
-        </div>
-        <div class="info-block">
-            <span class="info-label">Байршил</span>
-            <div class="info-value">E-Mart, 7-р давхар</div>
-        </div>
-    </section>
-
-    <h2 class="section-header reveal">Хөтөлбөрийн хуваарь</h2>
-
-    <div class="schedule-grid">
-        <div class="schedule-card reveal">
-            <div class="s-time-wrap"><span class="s-time">10:00 — 10:30</span></div>
-            <div>
-                <h3 class="s-title">Уралдааны бүртгэл</h3>
-                <p class="s-desc">Оролцогчдыг хүлээн авч мандат олгох, суудал эзлүүлэх.</p>
-            </div>
-        </div>
-
-        <div class="schedule-card reveal">
-            <div class="s-time-wrap"><span class="s-time">10:30 — 11:00</span></div>
-            <div>
-                <h3 class="s-title">Албан ёсны нээлт</h3>
-                <p class="s-desc">Зочдын мэндчилгээ ба Perpetua төслийн ерөнхий танилцуулга.</p>
-            </div>
-        </div>
-
-        <div class="schedule-card reveal">
-            <div class="s-time-wrap"><span class="s-time">11:00 — 12:30</span></div>
-            <div>
-                <h3 class="s-title">Ногоон эдийн засаг</h3>
-                <p class="s-desc">Салбарын мэргэжилтнүүдийн хуваалцах туршлага, санаачилгууд.</p>
-                <div class="s-sub">
-                    <strong>11:15</strong> — Монголын ногоон эдийн засгийн боломж<br><br>
-                    <strong>11:30</strong> — Эрчим хүчний шилжилтийн бодит замнал
-                </div>
-            </div>
-        </div>
-
-        <div class="schedule-card reveal">
-            <div class="s-time-wrap"><span class="s-time">12:30 — 13:25</span></div>
-            <div>
-                <h3 class="s-title">Бизнес ба Санхүүжилт</h3>
-                <p class="s-desc">Тогтвортой санхүүжилт болон оюутнуудын ирээдүйн карьерын боломжууд.</p>
-                <div class="s-sub">
-                    <strong>12:45</strong> — ESG сан ба ногоон зээлийн боломжууд<br><br>
-                    <strong>13:00</strong> — Ногоон хөгжил ба ирээдүйн карьер
-                </div>
-            </div>
-        </div>
-
-        <div class="schedule-card reveal">
-            <div class="s-time-wrap"><span class="s-time">13:25 — 14:00</span></div>
-            <div>
-                <h3 class="s-title">Хаалт & Чөлөөт ярилцлага</h3>
-                <p class="s-desc">Зочид болон менторуудаас зөвлөгөө авах чөлөөт цаг. Үйл ажиллагааны албан ёсны хаалт.</p>
-            </div>
-        </div>
-    </div>
 
     <footer class="reveal">
         <p>Зохион байгуулагч: МУИС-ийн Бизнесийн сургуулийн оюутны зөвлөл</p>
@@ -653,7 +468,6 @@
     </footer>
 </div>
 
-<!-- Document Modal -->
 <div id="modal" onclick="closeModal()">
     <div class="document-card" onclick="event.stopPropagation()">
         
