@@ -3,217 +3,187 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Perpetua 2026 — Бүртгэл</title>
-    
-    <link rel="stylesheet" href="style.css">
-    
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;800&family=Outfit:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400;1,500&display=swap" rel="stylesheet">
-    
+    <title>PERPETUA - Систем</title>
+    <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        /* Бүртгэлийн хуудсанд зориулсан нэмэлт стилүүд */
-        .page-reg {
-            max-width: 700px;
-            margin: 0 auto;
-            padding: 40px 20px 100px 20px;
+        body {
+            /* Background image with abstract dark vibe */
+            background-color: #050505;
+            background-image: radial-gradient(circle at center, #0a1f12 0%, #000000 100%);
+            color: white;
+            font-family: 'Courier New', Courier, monospace;
+            margin: 0;
+            overflow-x: hidden;
+        }
+
+        /* Glassmorphism for timer cards */
+        .glass-card {
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(74, 222, 128, 0.15);
+        }
+
+        .fade-in {
+            animation: fadeIn 2s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Mysterious Animations */
+        .glitch {
             position: relative;
-            z-index: 10;
+            color: white;
+            text-shadow: 0.05em 0 0 rgba(74, 222, 128, 0.75), -0.025em -0.05em 0 rgba(255, 255, 255, 0.5),
+                         0.025em 0.05em 0 rgba(22, 163, 74, 0.75);
+            animation: glitch 500ms infinite;
         }
 
-        .header-reg {
-            text-align: center;
-            margin-bottom: 60px;
-            margin-top: 40px;
+        @keyframes glitch {
+            0% { text-shadow: 0.05em 0 0 rgba(74, 222, 128, 0.75), -0.05em -0.025em 0 rgba(255, 255, 255, 0.5), -0.025em 0.05em 0 rgba(22, 163, 74, 0.75); }
+            14% { text-shadow: 0.05em 0 0 rgba(74, 222, 128, 0.75), -0.05em -0.025em 0 rgba(255, 255, 255, 0.5), -0.025em 0.05em 0 rgba(22, 163, 74, 0.75); }
+            15% { text-shadow: -0.05em -0.025em 0 rgba(74, 222, 128, 0.75), 0.025em 0.025em 0 rgba(255, 255, 255, 0.5), -0.05em -0.05em 0 rgba(22, 163, 74, 0.75); }
+            49% { text-shadow: -0.05em -0.025em 0 rgba(74, 222, 128, 0.75), 0.025em 0.025em 0 rgba(255, 255, 255, 0.5), -0.05em -0.05em 0 rgba(22, 163, 74, 0.75); }
+            50% { text-shadow: 0.025em 0.05em 0 rgba(74, 222, 128, 0.75), 0.05em 0 0 rgba(255, 255, 255, 0.5), 0 -0.05em 0 rgba(22, 163, 74, 0.75); }
+            99% { text-shadow: 0.025em 0.05em 0 rgba(74, 222, 128, 0.75), 0.05em 0 0 rgba(255, 255, 255, 0.5), 0 -0.05em 0 rgba(22, 163, 74, 0.75); }
+            100% { text-shadow: -0.025em 0 0 rgba(74, 222, 128, 0.75), -0.025em -0.025em 0 rgba(255, 255, 255, 0.5), -0.025em -0.05em 0 rgba(22, 163, 74, 0.75); }
         }
 
-        .logo-text {
-            font-family: var(--intro-font);
-            font-size: 28px;
-            letter-spacing: 5px;
-            color: var(--text);
-            text-decoration: none;
-            display: block;
-            margin-bottom: 10px;
+        .typewriter {
+            overflow: hidden;
+            border-right: .15em solid #4ade80;
+            white-space: nowrap;
+            margin: 0 auto;
+            letter-spacing: .1em;
+            animation: typing 3.5s steps(40, end), blink-caret .75s step-end infinite;
         }
 
-        .form-card {
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: 24px;
-            padding: 40px;
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            box-shadow: 0 40px 80px rgba(0,0,0,0.5);
-        }
+        @keyframes typing { from { width: 0 } to { width: 100% } }
+        @keyframes blink-caret { from, to { border-color: transparent } 50% { border-color: #4ade80; } }
 
-        .form-section {
-            margin-bottom: 40px;
-        }
-
-        .form-section h3 {
-            font-family: var(--serif);
-            font-size: 22px;
-            margin-bottom: 25px;
-            color: var(--accent);
-            border-bottom: 1px solid var(--border);
-            padding-bottom: 10px;
-        }
-
-        .input-group {
-            margin-bottom: 20px;
-        }
-
-        .label {
-            display: block;
-            font-size: 11px;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            color: var(--text-secondary);
-            margin-bottom: 8px;
-        }
-
-        input, select, textarea {
-            width: 100%;
-            background: rgba(0,0,0,0.3);
-            border: 1px solid var(--border);
-            padding: 14px 18px;
-            border-radius: 12px;
-            color: var(--text);
-            font-family: var(--sans);
-            font-size: 15px;
-            transition: all 0.3s ease;
-        }
-
-        input:focus, select:focus, textarea:focus {
-            outline: none;
-            border-color: var(--accent);
-            background: rgba(255,255,255,0.05);
-        }
-
-        .grid-members {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
-        }
-
-        .submit-btn-wrap {
-            text-align: center;
-            margin-top: 30px;
-        }
-
-        #success-screen {
-            display: none;
-            text-align: center;
-            padding: 60px 20px;
-        }
-
-        #success-screen h2 {
-            font-family: var(--serif);
-            font-size: 36px;
-            color: var(--accent);
-            margin-bottom: 20px;
-        }
-
-        @media (max-width: 600px) {
-            .grid-members { grid-template-columns: 1fr; }
-            .form-card { padding: 25px; }
+        .noise {
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            pointer-events: none; z-index: 50; opacity: 0.04;
+            background: url('https://grainy-gradients.vercel.app/noise.svg');
         }
     </style>
 </head>
-<body>
+<body class="min-h-screen flex flex-col justify-between bg-black relative">
+    <div class="noise"></div>
 
-<div class="spotlight" id="spotlight"></div>
+    <header class="p-6 md:p-10 w-full flex justify-between items-center z-10 fade-in">
+        <a href="index.html" class="flex items-center gap-3 opacity-70 hover:opacity-100 transition duration-500 cursor-pointer" style="text-decoration: none;">
+            <div class="w-3 h-3 bg-green-500 rounded-full animate-pulse shadow-[0_0_10px_rgba(34,197,94,0.8)]"></div>
+            <h1 class="text-sm md:text-base font-mono tracking-[0.3em] text-gray-400 uppercase">SYSTEM ACTIVE</h1>
+        </a>
+        <div>
+            <span class="text-xs md:text-sm font-mono text-green-800 tracking-widest hidden md:inline-block border border-green-900 px-3 py-1 bg-green-900/10">CLASSIFIED</span>
+        </div>
+    </header>
 
-<div class="page-reg">
-    <div class="header-reg reveal">
-        <a href="index.html" class="logo-text">PERPETUA</a>
-        <p style="color: var(--accent); font-style: italic; font-family: var(--serif);">Төслийн уралдааны бүртгэл</p>
-    </div>
+    <main class="flex-grow flex flex-col items-center justify-center text-center px-4 z-10 fade-in mt-10">
+        
+        <p class="text-green-600 font-mono tracking-[0.5em] uppercase mb-4 text-xs md:text-sm animate-pulse">[ П Р О Т О К О Л . 0 1 : БҮРТГЭЛ ХААГДАХАД ]</p>
+        
+        <h2 class="text-5xl md:text-7xl lg:text-9xl font-bold mb-8 tracking-tighter glitch" data-text="PERPETUA">
+            PERPETUA
+        </h2>
+        
+        <div class="mb-12 inline-block max-w-full overflow-hidden px-4">
+            <p class="text-gray-400 text-sm md:text-xl font-mono typewriter">
+                Шинэ мөчлөг эхлэхэд бэлэн боллоо...
+            </p>
+        </div>
 
-    <div class="form-card reveal" id="reg-form-container">
-        <form id="perpetuaRegForm">
-            <div class="form-section">
-                <h3>Төслийн мэдээлэл</h3>
-                <div class="input-group">
-                    <span class="label">Багийн нэр</span>
-                    <input type="text" required placeholder="Багийн нэрээ оруулна уу">
-                </div>
-                <div class="input-group">
-                    <span class="label">Төслийн чиглэл</span>
-                    <select required>
-                        <option value="" disabled selected>Сонгох...</option>
-                        <option>Агаарын чанар, амьдрах орчин</option>
-                        <option>Хог хаягдал, дахин боловсруулалт</option>
-                        <option>Ус, эрчим хүчний хэмнэлт</option>
-                        <option>Ногоон боловсрол, санхүү</option>
-                    </select>
-                </div>
+        <div id="countdown" class="flex flex-wrap justify-center gap-3 md:gap-6 mb-12">
+            <div class="glass-card p-4 md:p-6 rounded-lg min-w-[70px] md:min-w-[100px]">
+                <div id="days" class="text-2xl md:text-4xl font-mono text-green-400 mb-1">00</div>
+                <div class="text-[10px] md:text-xs text-gray-600 font-mono uppercase tracking-widest">Өдөр</div>
             </div>
-
-            <div class="form-section">
-                <h3>Багийн гишүүд</h3>
-                <div class="input-group">
-                    <span class="label">Багийн ахлагч (Нэр, Утас)</span>
-                    <div class="grid-members">
-                        <input type="text" required placeholder="Овог нэр">
-                        <input type="tel" required placeholder="Утасны дугаар">
-                    </div>
-                </div>
-                <div class="input-group">
-                    <span class="label">Гишүүн 2</span>
-                    <input type="text" required placeholder="Овог нэр">
-                </div>
-                <div class="input-group">
-                    <span class="label">Гишүүн 3</span>
-                    <input type="text" required placeholder="Овог нэр">
-                </div>
+            <div class="glass-card p-4 md:p-6 rounded-lg min-w-[70px] md:min-w-[100px]">
+                <div id="hours" class="text-2xl md:text-4xl font-mono text-green-400 mb-1">00</div>
+                <div class="text-[10px] md:text-xs text-gray-600 font-mono uppercase tracking-widest">Цаг</div>
             </div>
-
-            <div class="submit-btn-wrap">
-                <button type="submit" class="btn btn-primary">Бүртгүүлэх</button>
+            <div class="glass-card p-4 md:p-6 rounded-lg min-w-[70px] md:min-w-[100px]">
+                <div id="minutes" class="text-2xl md:text-4xl font-mono text-green-400 mb-1">00</div>
+                <div class="text-[10px] md:text-xs text-gray-600 font-mono uppercase tracking-widest">Минут</div>
             </div>
-        </form>
-    </div>
+            <div class="glass-card p-4 md:p-6 rounded-lg min-w-[70px] md:min-w-[100px]">
+                <div id="seconds" class="text-2xl md:text-4xl font-mono text-green-400 mb-1">00</div>
+                <div class="text-[10px] md:text-xs text-gray-600 font-mono uppercase tracking-widest">Секунд</div>
+            </div>
+        </div>
 
-    <div id="success-screen">
-        <h2>Амжилттай бүртгэгдлээ.</h2>
-        <p style="color: var(--text-secondary); margin-bottom: 40px;">Бид танай багийн мэдээллийг хянаад удахгүй хариу мэдэгдэх болно.</p>
-        <a href="index.html" class="btn btn-secondary">Нүүр хуудас руу буцах</a>
-    </div>
+        <div class="w-full max-w-md mx-auto mt-4 mb-10">
+            <p class="text-xs font-mono text-gray-500 mb-2 text-left">> Системд хандах хүсэлт илгээх (Бүртгүүлэх):</p>
+            <form id="notifyForm" class="flex flex-col sm:flex-row gap-0 border border-green-900 rounded bg-black/50 focus-within:border-green-500 transition-colors shadow-[0_0_15px_rgba(20,83,45,0.5)]">
+                <input 
+                    type="email" 
+                    id="emailInput" 
+                    placeholder="ID (Email) оруулах..." 
+                    required
+                    class="w-full px-5 py-3 bg-transparent text-green-400 font-mono placeholder-gray-700 focus:outline-none text-sm"
+                >
+                <button 
+                    type="submit" 
+                    class="w-full sm:w-auto px-6 py-3 bg-green-900/30 hover:bg-green-500 hover:text-black text-green-500 font-mono font-bold transition duration-300 whitespace-nowrap text-sm"
+                >
+                    [ НЭВТРЭХ ]
+                </button>
+            </form>
+            <div id="formMessage" class="hidden mt-4 text-green-500 font-mono text-xs md:text-sm border border-green-500 p-3 bg-green-900/20 text-left">
+                > ХАНДАЛТ БАТАЛГААЖЛАА.<br>> ДАРААГИЙН ЗААВАРЧИЛГААГ ИМЭЙЛЭЭР ИЛГЭЭХ БОЛНО...
+            </div>
+        </div>
 
-    <footer>
-        <p>&copy; 2026 Perpetua. Бүх эрх хуулиар хамгаалагдсан.</p>
+    </main>
+
+    <footer class="p-6 text-center text-gray-700 font-mono text-[10px] md:text-xs z-10 fade-in uppercase tracking-widest">
+        &copy; 2026 PERPETUA. Задлах хориглоно.
     </footer>
-</div>
 
-<script>
-    // Spotlight effect
-    const spotlight = document.getElementById('spotlight');
-    document.addEventListener('mousemove', (e) => {
-        spotlight.style.setProperty('--cursor-x', `${e.clientX}px`);
-        spotlight.style.setProperty('--cursor-y', `${e.clientY}px`);
-    });
+    <script>
+        // Countdown Logic (Closes on May 9, 2026 at 23:59:59)
+        const launchDate = new Date('2026-05-09T23:59:59').getTime(); 
 
-    // Simple Form Logic
-    document.getElementById('perpetuaRegForm').onsubmit = function(e) {
-        e.preventDefault();
-        document.getElementById('reg-form-container').style.display = 'none';
-        document.getElementById('success-screen').style.display = 'block';
-    };
+        function updateCountdown() {
+            const now = new Date().getTime();
+            const distance = launchDate - now;
 
-    // Reveal animation
-    window.addEventListener('scroll', reveal);
-    function reveal() {
-        const reveals = document.querySelectorAll('.reveal');
-        for (let i = 0; i < reveals.length; i++) {
-            const windowHeight = window.innerHeight;
-            const elementTop = reveals[i].getBoundingClientRect().top;
-            if (elementTop < windowHeight - 100) {
-                reveals[i].classList.add('active');
+            if (distance < 0) {
+                document.getElementById("countdown").innerHTML = "<div class='text-2xl md:text-3xl text-green-500 font-mono font-bold glitch' data-text='> БҮРТГЭЛ ХААГДЛАА <'>> БҮРТГЭЛ ХААГДЛАА <</div>";
+                return;
             }
-        }
-    }
-    reveal();
-</script>
 
+            const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+            document.getElementById("days").innerText = days.toString().padStart(2, '0');
+            document.getElementById("hours").innerText = hours.toString().padStart(2, '0');
+            document.getElementById("minutes").innerText = minutes.toString().padStart(2, '0');
+            document.getElementById("seconds").innerText = seconds.toString().padStart(2, '0');
+        }
+
+        setInterval(updateCountdown, 1000);
+        updateCountdown();
+
+        // Form Submission Logic
+        document.getElementById('notifyForm').addEventListener('submit', function(e) {
+            e.preventDefault(); 
+            const email = document.getElementById('emailInput').value;
+            
+            if(email) {
+                this.style.display = 'none';
+                const msgEl = document.getElementById('formMessage');
+                msgEl.classList.remove('hidden');
+                msgEl.classList.add('animate-pulse');
+            }
+        });
+    </script>
 </body>
 </html>
