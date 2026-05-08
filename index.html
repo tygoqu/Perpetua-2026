@@ -9,16 +9,15 @@
     <style>
         /* --- Premium CSS Variables --- */
         :root {
-            --bg: #0C0C0C; /* Шөнийн гүн хар/саарал өнгө */
+            --bg: #0C0C0C; 
             --text: #f0f4ee;
             --text-secondary: rgba(240, 244, 238, 0.5);
             --surface: rgba(255, 255, 255, 0.04);
             --border: rgba(255, 255, 255, 0.08);
             --accent: #4ade80;
-            --accent-glow: rgba(74, 222, 128, 0.2);
-            --sun-glow: rgba(74, 222, 128, 0); /* Анх орж ирэхэд нуугдмал */
+            --accent-glow: rgba(74, 222, 128, 0.4);
+            --sun-glow: rgba(74, 222, 128, 0); 
             
-            /* Cinzel фонтыг гол гарчигт тохирууллаа */
             --intro-font: 'Cinzel', serif; 
             --serif: 'Playfair Display', Georgia, serif; 
             --sans: 'Outfit', -apple-system, sans-serif; 
@@ -32,11 +31,20 @@
             --surface: rgba(255, 255, 255, 0.4);
             --border: rgba(0, 0, 0, 0.06);
             --accent: #2e7d32;
-            --accent-glow: rgba(46, 125, 50, 0.15);
-            --sun-glow: rgba(255, 245, 220, 0.6); /* Нарны зөөлөн туяа */
+            --accent-glow: rgba(46, 125, 50, 0.4);
+            --sun-glow: rgba(255, 245, 220, 0.6); 
         }
 
-        * { box-sizing: border-box; margin: 0; padding: 0; }
+        * { 
+            box-sizing: border-box; 
+            margin: 0; 
+            padding: 0; 
+        }
+
+        /* Хулганы үндсэн курсорыг компьютерийн дэлгэц дээр нуух */
+        @media (pointer: fine) {
+            * { cursor: none !important; }
+        }
 
         html { scroll-behavior: smooth; }
 
@@ -47,8 +55,35 @@
             line-height: 1.6;
             overflow-x: hidden; 
             -webkit-font-smoothing: antialiased;
-            /* Өнгөний шилжилт (Хараас -> Ногоон руу) 3 секунд */
-            transition: background-color 3s ease-in-out, color 3s ease-in-out;
+            /* Хурдан цайрах шилжилт (3s байсныг 0.4s болголоо) */
+            transition: background-color 0.4s ease-in-out, color 0.4s ease-in-out;
+        }
+
+        /* --- Custom White Dot Cursor --- */
+        .custom-cursor {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 12px;
+            height: 12px;
+            background-color: #ffffff;
+            border-radius: 50%;
+            pointer-events: none; /* Хулганы товшилтод саад болохгүй */
+            z-index: 10000;
+            transform: translate(-50%, -50%);
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.8), 0 0 20px var(--accent-glow);
+            transition: opacity 0.3s ease, transform 0.1s linear, width 0.3s ease, height 0.3s ease;
+            mix-blend-mode: difference; /* Цайвар дэвсгэр дээр хар болж харагдана */
+        }
+
+        .custom-cursor.hidden {
+            opacity: 0;
+            transform: translate(-50%, -50%) scale(0);
+        }
+
+        /* Зөвхөн touch төхөөрөмж дээр Custom Cursor-ыг нуух */
+        @media (hover: none) and (pointer: coarse) {
+            .custom-cursor { display: none; }
         }
 
         /* --- Spotlight / Flashlight Effect --- */
@@ -58,28 +93,27 @@
             left: 0;
             width: 100vw;
             height: 100vh;
-            pointer-events: none; /* Хулганы товшилтод саад болохгүй */
+            pointer-events: none;
             z-index: 900;
             background: radial-gradient(
-                circle 700px at var(--cursor-x, 50vw) var(--cursor-y, 50vh),
-                rgba(46, 125, 50, 0.15) 0%,
-                rgba(12, 12, 12, 0.4) 30%,
-                rgba(12, 12, 12, 0.9) 60%,
+                circle 600px at var(--cursor-x, 50vw) var(--cursor-y, 50vh),
+                rgba(46, 125, 50, 0.12) 0%,
+                rgba(12, 12, 12, 0.3) 40%,
+                rgba(12, 12, 12, 0.95) 70%,
                 #0C0C0C 100%
             );
             transition: opacity 0.5s ease;
         }
 
-        /* Зөвхөн хулгана/компьютертай төхөөрөмж дээр ажиллах */
         @media (hover: none) and (pointer: coarse) {
-            .spotlight {
-                display: none; 
-            }
+            .spotlight { display: none; }
         }
 
-        /* Гэрэл асаалттай үед гэрэлтүүлэгчийг унтраах */
-        body.lights-on .spotlight {
+        /* Доош гүйлгэж цайрах үед эсвэл гэрэл асаах үед спотлайтыг унтраах */
+        body.lights-on .spotlight,
+        body.sunrise-active .spotlight {
             opacity: 0; 
+            visibility: hidden;
         }
 
         /* --- Light Switch Button --- */
@@ -96,16 +130,16 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            cursor: pointer;
             z-index: 1000;
-            transition: all 0.3s ease;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             backdrop-filter: blur(10px);
             -webkit-backdrop-filter: blur(10px);
         }
 
-        .light-switch:hover {
-            background: rgba(255, 255, 255, 0.1);
-            transform: scale(1.05);
+        .light-switch:hover, .btn:hover, .btn-modal:hover {
+            box-shadow: 0 0 20px var(--accent-glow), 0 0 40px var(--accent-glow);
+            border-color: var(--accent);
+            transform: scale(1.08) translateY(-2px);
         }
 
         .light-switch svg {
@@ -116,10 +150,10 @@
         }
 
         body.lights-on .light-switch svg {
-            color: var(--accent); /* Ассан үед ногоон болох */
+            color: var(--accent); 
         }
 
-        /* --- Wave Glow Background (Доороос уусах) --- */
+        /* --- Wave Glow Background --- */
         .sun-wave {
             position: fixed;
             bottom: -100vh;
@@ -128,7 +162,8 @@
             height: 100vh;
             background: linear-gradient(to top, var(--sun-glow) 0%, transparent 100%);
             z-index: -1;
-            transition: bottom 3.5s cubic-bezier(0.25, 1, 0.5, 1), background 3s ease-in-out;
+            /* Нарны туяа гарах хурдыг мөн адил хурдасгав */
+            transition: bottom 0.4s cubic-bezier(0.25, 1, 0.5, 1), background 0.4s ease-in-out;
             pointer-events: none;
         }
 
@@ -136,15 +171,17 @@
             bottom: 0; 
         }
 
-        /* --- Scroll Reveal Animations (Apple Style) --- */
+        /* --- Dynamic Scroll Reveal Animations --- */
         .reveal {
             opacity: 0;
-            transform: translateY(40px);
-            transition: all 1.4s cubic-bezier(0.16, 1, 0.3, 1);
+            transform: translateY(50px) scale(0.95);
+            filter: blur(5px);
+            transition: all 1.2s cubic-bezier(0.25, 1, 0.5, 1);
         }
         .reveal.active {
             opacity: 1;
-            transform: translateY(0);
+            transform: translateY(0) scale(1);
+            filter: blur(0);
         }
 
         /* --- 1. Intro Screen (Teaser) --- */
@@ -157,31 +194,32 @@
             justify-content: center;
             text-align: center;
             position: relative;
+            perspective: 1000px; /* 3D эффект нэмэх */
         }
 
         .intro-title {
-            font-family: var(--intro-font); /* Cinzel фонтыг дуудах */
+            font-family: var(--intro-font); 
             font-size: clamp(60px, 12vw, 150px);
             font-weight: 600;
-            letter-spacing: 4px; /* Cinzel фонт дээр үсэг хоорондын зай маш гоё харагддаг */
+            letter-spacing: 10px; 
             margin-bottom: 20px;
             text-transform: uppercase;
-            background: linear-gradient(180deg, #fff 0%, rgba(255,255,255,0.4) 100%);
+            background: linear-gradient(180deg, #fff 0%, rgba(255,255,255,0.2) 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             opacity: 0;
-            animation: slowFade 2s ease forwards 0.2s;
+            animation: cinematicReveal 3s cubic-bezier(0.215, 0.61, 0.355, 1) forwards 0.3s;
         }
 
         body.sunrise-active .intro-title {
-            background: linear-gradient(180deg, var(--text) 0%, rgba(17,26,20,0.4) 100%);
+            background: linear-gradient(180deg, var(--text) 0%, rgba(17,26,20,0.3) 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
 
-        @keyframes slowFade {
-            from { opacity: 0; transform: translateY(15px); }
-            to { opacity: 1; transform: translateY(0); }
+        @keyframes cinematicReveal {
+            0% { opacity: 0; transform: translateZ(-200px) translateY(40px); letter-spacing: 30px; filter: blur(20px); }
+            100% { opacity: 1; transform: translateZ(0) translateY(0); letter-spacing: 10px; filter: blur(0); }
         }
 
         .scroll-indicator {
@@ -196,19 +234,32 @@
             text-transform: uppercase;
             letter-spacing: 4px;
             opacity: 0;
-            animation: pulse 2.5s infinite, slowFade 1.5s ease forwards 1s;
+            animation: pulse 2.5s infinite, slowFade 1.5s ease forwards 2s;
+        }
+
+        @keyframes slowFade {
+            from { opacity: 0; transform: translateY(15px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         @keyframes pulse {
             0% { transform: translateY(0); opacity: 0.3; }
-            50% { transform: translateY(8px); opacity: 0.8; }
+            50% { transform: translateY(10px); opacity: 0.8; }
             100% { transform: translateY(0); opacity: 0.3; }
         }
 
         .scroll-line {
             width: 1px;
-            height: 50px;
+            height: 60px;
             background: linear-gradient(to bottom, var(--text-secondary), transparent);
+            animation: lineFlow 2s infinite linear;
+        }
+
+        @keyframes lineFlow {
+            0% { transform: scaleY(0); transform-origin: top; }
+            50% { transform: scaleY(1); transform-origin: top; }
+            50.1% { transform: scaleY(1); transform-origin: bottom; }
+            100% { transform: scaleY(0); transform-origin: bottom; }
         }
 
         /* --- 2. Main Content Container --- */
@@ -230,6 +281,13 @@
             flex-direction: column;
             align-items: center;
             text-align: center;
+            animation: floatContainer 6s ease-in-out infinite;
+        }
+
+        @keyframes floatContainer {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+            100% { transform: translateY(0px); }
         }
 
         .hero h2 {
@@ -243,6 +301,7 @@
         .hero h2 em {
             font-style: italic;
             color: var(--accent);
+            text-shadow: 0 0 20px var(--accent-glow);
         }
 
         .hero-desc {
@@ -256,48 +315,37 @@
 
         .cta-wrap {
             display: flex;
-            gap: 15px;
+            gap: 20px;
             flex-wrap: wrap;
             justify-content: center;
         }
 
         .btn {
-            padding: 16px 36px;
+            padding: 16px 40px;
             border-radius: 100px;
             text-decoration: none;
             font-weight: 500;
-            transition: all 0.4s ease;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             font-size: 15px;
-            cursor: pointer;
             border: 1px solid transparent;
             display: inline-block;
             font-family: var(--sans);
-            letter-spacing: 0.5px;
+            letter-spacing: 1px;
             position: relative;
             z-index: 20;
+            overflow: hidden;
         }
 
         .btn-primary {
             background: var(--text);
             color: var(--bg);
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-        }
-
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 15px 40px rgba(0,0,0,0.15);
-            opacity: 0.9;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
         }
 
         .btn-secondary {
             background: transparent;
             border-color: var(--border);
             color: var(--text);
-        }
-
-        .btn-secondary:hover {
-            background: var(--surface);
-            border-color: var(--text-secondary);
         }
 
         /* --- Footer --- */
@@ -310,103 +358,134 @@
             letter-spacing: 0.5px;
         }
 
-        /* --- Geometric Blooming Flowers --- */
+        /* --- Geometric Blooming Flowers (Particles) --- */
         @keyframes bloom {
-            0% { opacity: 0; transform: scale(0) rotate(0deg); }
-            15% { opacity: 0.8; transform: scale(1.2) rotate(45deg); }
-            30% { opacity: 0.5; transform: scale(1) rotate(60deg); }
-            100% { opacity: 0; transform: scale(1) rotate(90deg); }
+            0% { opacity: 0; transform: scale(0) rotate(0deg) translateY(0); }
+            20% { opacity: 0.8; transform: scale(1.2) rotate(45deg) translateY(-20px); }
+            50% { opacity: 0.5; transform: scale(1) rotate(90deg) translateY(-40px); }
+            100% { opacity: 0; transform: scale(0.8) rotate(180deg) translateY(-80px); }
         }
 
         .flower {
             position: absolute;
             pointer-events: none; 
             z-index: 1; 
-            width: 140px;
-            height: 140px;
+            width: 80px;
+            height: 80px;
             opacity: 0;
             transform-origin: center;
-            animation: bloom 4.5s ease-out forwards;
+            animation: bloom 6s ease-out forwards;
         }
-
-        .flower svg { width: 100%; height: 100%; }
+        .flower svg { width: 100%; height: 100%; filter: drop-shadow(0 0 10px var(--accent-glow)); }
 
         /* --- Strict Document Modal --- */
         #modal {
             display: none;
             position: fixed;
             inset: 0;
-            background: rgba(0,0,0,0.8);
+            background: rgba(0,0,0,0.85);
             backdrop-filter: blur(15px);
             -webkit-backdrop-filter: blur(15px);
             z-index: 2000; 
             align-items: center;
             justify-content: center;
             padding: 20px;
+            opacity: 0;
+            transition: opacity 0.4s ease;
         }
 
-        /* Academic/Official specs strictly applied here */
+        #modal.show {
+            display: flex;
+            opacity: 1;
+        }
+
+        /* --- User Requirements for Document Formatting --- */
         .document-card {
+            /* Font & Text Properties */
             font-family: Arial, sans-serif;
             font-size: 12pt;
             line-height: 1.15;
             background: #ffffff;
             color: #000000;
-            /* Exactly: 2cm Top/Bottom, 3cm Left, 1.5cm Right */
+            text-align: justify;
+
+            /* Margins transformed to Paddings for web viewing */
+            /* Top: 2cm, Right: 1.5cm, Bottom: 2cm, Left: 3cm */
             padding: 2cm 1.5cm 2cm 3cm; 
-            max-width: 850px;
+            
+            max-width: 21cm; /* A4 Width approximation */
             width: 100%;
-            max-height: 90vh;
+            height: 85vh; /* Fixed height for scrolling within the document */
             overflow-y: auto;
             border-radius: 4px; 
-            box-shadow: 0 30px 60px rgba(0,0,0,0.3);
+            box-shadow: 0 30px 60px rgba(0,0,0,0.5), 0 0 40px rgba(255,255,255,0.1);
             position: relative;
+            transform: translateY(50px) scale(0.95);
+            transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
 
+        #modal.show .document-card {
+            transform: translateY(0) scale(1);
+        }
+
+        /* Formatting inside the document based on the PDF */
         .document-card h1.doc-title {
             text-align: center;
             font-size: 14pt;
-            margin-bottom: 15px;
-            font-family: Arial, sans-serif;
+            margin-bottom: 20px;
             font-weight: bold;
+            text-transform: uppercase;
         }
         
         .document-card h2.doc-heading {
             font-size: 12pt;
-            margin-top: 25px;
+            margin-top: 20px;
             margin-bottom: 10px;
-            font-family: Arial, sans-serif;
             font-weight: bold;
-            text-transform: uppercase;
         }
 
-        .document-card p, .document-card li {
-            font-size: 12pt;
+        .document-card p {
             margin-bottom: 10px;
-            text-align: justify;
         }
 
-        .document-card ul {
-            padding-left: 20px;
-        }
-
-        .organizer {
+        .document-card .organizer, .document-card .approval {
             text-align: center;
-            margin-bottom: 40px;
-            font-style: italic;
+            margin-bottom: 20px;
         }
 
-        .document-card table {
-            width: 100%;
-            border-collapse: collapse;
-            margin: 20px 0;
+        .document-card .right-align {
+            text-align: right;
+            margin-bottom: 20px;
         }
 
-        .document-card th, .document-card td {
-            border: 1px solid #000;
-            padding: 10px;
-            text-align: left;
-            font-size: 11pt;
+        .document-card ul, .document-card ol {
+            padding-left: 25px;
+            margin-bottom: 10px;
+        }
+
+        .document-card li {
+            margin-bottom: 5px;
+        }
+
+        .document-card .signatures {
+            margin-top: 30px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        /* Custom Scrollbar for the Document */
+        .document-card::-webkit-scrollbar {
+            width: 8px;
+        }
+        .document-card::-webkit-scrollbar-track {
+            background: #f1f1f1; 
+        }
+        .document-card::-webkit-scrollbar-thumb {
+            background: #888; 
+            border-radius: 4px;
+        }
+        .document-card::-webkit-scrollbar-thumb:hover {
+            background: #555; 
         }
 
         .close-modal-btn {
@@ -418,20 +497,28 @@
         .btn-modal {
             background: #0C0C0C;
             color: #fff;
-            padding: 12px 30px;
-            border: none;
+            padding: 12px 35px;
+            border: 1px solid rgba(255,255,255,0.2);
             border-radius: 100px;
-            cursor: pointer;
             font-size: 14px;
+            transition: all 0.3s ease;
+            font-family: var(--sans);
+            letter-spacing: 1px;
+            text-transform: uppercase;
         }
 
         @media (max-width: 768px) {
             .page { padding: 40px 20px; }
-            .document-card { padding: 30px 20px; } 
+            /* Adjust strict padding for smaller mobile screens so it's readable, 
+               but still keeps proportional difference */
+            .document-card { padding: 30px 20px 30px 25px; } 
         }
     </style>
 </head>
 <body>
+
+<!-- Custom White Dot Cursor -->
+<div class="custom-cursor" id="custom-cursor"></div>
 
 <div class="spotlight" id="spotlight"></div>
 
@@ -453,105 +540,191 @@
 
 <div class="page">
     <header class="hero reveal">
-        <h2>Төслийн <em>Уралдаан</em></h2>
-        <p class="hero-desc">МУИС-ийн оюутнуудын ногоон хөгжил, тогтвортой шилжилтийн талаарх мэдлэг, бүтээлч санаачилга, төсөл боловсруулах ур чадварыг дэмжих уралдаан.</p>
+        <h2>Төслийн <em>Уралдаан</em> 2026</h2>
+        <p class="hero-desc">МУИС-ийн оюутнуудын ногоон хөгжил, тогтвортой шилжилтийн талаарх мэдлэг, бүтээлч санаачилга, төсөл боловсруулах ур чадварыг дэмжих зорилготой шинэлэг уралдаан.</p>
         
         <div class="cta-wrap">
-            <a href="https://perpetua-2026.vercel.app/reg" class="btn btn-primary">Одоо бүртгүүлэх</a>
-            <button class="btn btn-secondary" onclick="openModal()">Удирдамж үзэх</button>
+            <a href="#" class="btn btn-primary interactive-element">Одоо бүртгүүлэх</a>
+            <button class="btn btn-secondary interactive-element" onclick="openModal()">Удирдамж үзэх</button>
         </div>
     </header>
 
     <footer class="reveal">
-        <p>Зохион байгуулагч: МУИС-ийн Бизнесийн сургуулийн оюутны зөвлөл</p>
+        <p>Зохион байгуулагч: МУИС-ийн Бизнесийн сургуулийн Оюутны зөвлөл</p>
         <p style="margin-top: 10px; opacity: 0.4;">&copy; 2026 Perpetua Event. Бүх эрх хуулиар хамгаалагдсан.</p>
     </footer>
 </div>
 
 <div id="modal" onclick="closeModal()">
+    <!-- 2cm top/bottom, 3cm left, 1.5cm right applied via padding in CSS -->
+    <!-- Arial 12pt, line-spacing 1.15 applied via CSS -->
     <div class="document-card" onclick="event.stopPropagation()">
         
-        <h1 class="doc-title">“НОГООН ХӨГЖИЛ 2026” ТӨСЛИЙН УРАЛДААНЫ УДИРДАМЖ</h1>
-        <div class="organizer">ЗОХИОН БАЙГУУЛАГЧ: МУИС-ийн Бизнесийн сургуулийн Оюутны зөвлөл</div>
+        <div class="approval">
+            <p>БАТЛАВ.</p>
+            <p>МУИС-ИЙН БИЗНЕСИЙН СУРГУУЛИЙН<br>ЗАХИРАЛ Н.БАТНАСАН</p>
+        </div>
+
+        <h1 class="doc-title">"НОГООН ХӨГЖИЛ 2026" ТӨСЛИЙН УРАЛДААНЫ УДИРДАМЖ</h1>
+        
+        <div class="organizer">
+            <p><strong>ЗОХИОН БАЙГУУЛАГЧ:</strong><br>МУИС-ийн Бизнесийн Сургуулийн Оюутны зөвлөл</p>
+        </div>
 
         <h2 class="doc-heading">ЕРӨНХИЙ МЭДЭЭЛЭЛ</h2>
-        <p>“PERPETUA 2026” төслийн уралдаан нь МУИС-ийн оюутнуудын ногоон хөгжил, тогтвортой шилжилтийн талаарх мэдлэг, бүтээлч санаачилга, төсөл боловсруулах ур чадварыг дэмжих зорилготой уралдаан юм. Оролцогч багууд нийгэм, эдийн засаг, байгаль орчны тулгамдсан асуудлыг тодорхойлж, шинэлэг шийдэл боловсруулна.</p>
+        <p>"PERPETUA 2026" төслийн уралдаан нь МУИС-ийн оюутнуудын ногоон хөгжил, тогтвортой шилжилтийн талаарх мэдлэг, бүтээлч санаачилга, төсөл боловсруулах ур чадварыг дэмжих зорилготой уралдаан юм. Тус уралдааны хүрээнд оролцогч багууд нийгэм, эдийн засаг, байгаль орчны тулгамдсан асуудлыг тодорхойлон, бодит хэрэгцээнд нийцсэн, шинэлэг, хэрэгжих боломжтой төслийн шийдэл боловсруулж танилцуулна.</p>
 
-        <h2 class="doc-heading">1. ЗОРИЛГО</h2>
-        <p>Оюутан залуусын бүтээлч сэтгэлгээ, инновац, багаар ажиллах чадварыг хөгжүүлэх, ногоон хөгжлийн мэдлэгийг нэмэгдүүлэхэд оршино. Санаагаа судалгаатайгаар хөгжүүлж, практик түвшинд хэрэгжүүлэх боломжийг эрэлхийлнэ.</p>
+        <h2 class="doc-heading">1. Зорилго</h2>
+        <p>Энэхүү уралдааны зорилго нь оюутан, залуучуудын бүтээлч сэтгэлгээ, инновац, багаар ажиллах чадвар болон төсөл боловсруулах ур чадварыг хөгжүүлэхийн зэрэгцээ ногоон хөгжил, тогтвортой шилжилтийн талаарх мэдлэг ойлголтыг нэмэгдүүлэхэд оршино. Мөн оролцогчдыг бодит асуудалд суурилсан шийдэл боловсруулах, санаагаа судалгаа, үндэслэлтэйгээр хөгжүүлэх, төслөө олон нийт болон мэргэжлийн төлөөлөлд танилцуулах, цаашид практик түвшинд хэрэгжүүлэх боломжийг эрэлхийлэхэд чиглүүлнэ.</p>
 
-        <h2 class="doc-heading">2. ХАМРАХ ХҮРЭЭ</h2>
-        <p>МУИС-ийн бакалаврын өдрийн ангийн 3, 4 дүгээр түвшний идэвхтэй суралцагч оюутнууд оролцоно.</p>
+        <h2 class="doc-heading">2. Хамрах хүрээ</h2>
+        <p>Уралдаанд МУИС-ийн бакалаврын өдрийн ангийн 2, 3, 4 дүгээр түвшний идэвхтэй суралцагч оюутнууд оролцоно. Уралдааныг МУИС болон төр, хувийн хэвшлийн байгууллагуудын хамтын ажиллагааны хүрээнд зохион байгуулна.</p>
 
-        <h2 class="doc-heading">3. ОРОЛЦОГЧДОД ТАВИГДАХ ШААРДЛАГА</h2>
-        <ul>
-            <li>Баг нь 3 оюутнаас бүрдсэн байна.</li>
-            <li>Бүх гишүүд МУИС-ийн бакалаврын өдрийн ангийн идэвхтэй суралцагч байна.</li>
+        <h2 class="doc-heading">3. Оролцогчдод тавигдах шаардлага</h2>
+        <ol>
+            <li>Оролцогч баг нь 3 оюутнаас бүрдсэн байна.</li>
+            <li>Багийн бүх гишүүн МУИС-ийн бакалаврын өдрийн ангийн идэвхтэй суралцагч байна.</li>
+            <li>Бүртгэл хийх үед багийн нэр, багийн ахлагчийн мэдээлэл тодорхой болсон байна.</li>
             <li>Нэг баг нэг л төслийн санал ирүүлнэ.</li>
-            <li>Төсөл нь бусдын оюуны өмчийг зөрчөөгүй, оролцогчдын өөрсдийн бүтээл байна.</li>
-        </ul>
+            <li>Ирүүлэх төсөл нь оролцогчдын өөрсдийн боловсруулсан, бусдын оюуны өмчийг зөрчөөгүй байна.</li>
+        </ol>
 
-        <h2 class="doc-heading">4. ХУГАЦАА БА БҮТЭЦ</h2>
-        <table>
-            <tr>
-                <th>Үе шат</th>
-                <th>Хугацаа</th>
-            </tr>
-            <tr>
-                <td>Бүртгэл</td>
-                <td>2026.05.04 – 2026.05.09</td>
-            </tr>
-            <tr>
-                <td>Нээлт</td>
-                <td>2026.05.10</td>
-            </tr>
-            <tr>
-                <td>Төслийн санал хүлээн авах</td>
-                <td>2026.05.10 – 2026.05.17</td>
-            </tr>
-            <tr>
-                <td>Шилдэг 15 багийг шалгаруулах</td>
-                <td>Үнэлгээний дагуу эрэмбэлж шалгаруулна</td>
-            </tr>
-            <tr>
-                <td>Питч танилцуулга & Эцсийн шалгаруулалт</td>
-                <td>2026.05.23</td>
-            </tr>
-        </table>
+        <h2 class="doc-heading">4. Хугацаа/Тэмцээний бүтэц:</h2>
+        <ol>
+            <li><strong>Бүртгэлийн үе шат:</strong> 2026.05.04-2026.05.09</li>
+            <li><strong>Нээлтийн үйл ажиллагаа:</strong> 2026.05.10</li>
+            <li><strong>Төслийн санал хүлээн авах, үнэлэх үе шат:</strong> 2026.05.10-2026.05.17</li>
+            <li><strong>Шилдэг 15 багийг шалгаруулах үе шат:</strong> Ирүүлсэн төслүүдийг үнэлгээний шалгуураар дүгнэж, шилдэг 15 багийг сонгон шалгаруулна.</li>
+            <li><strong>Питч танилцуулга ба эцсийн шалгаруулалт:</strong> 2026.05.23-ны өдөр шилдэг багууд төслөө танилцуулж, шилдгийн шилдэг нэг багийг шалгаруулна.</li>
+        </ol>
 
-        <h2 class="doc-heading">5. ТӨСЛИЙН ЧИГЛЭЛҮҮД</h2>
-        <p>Дараах чиглэлүүдээр төслийн санал боловсруулна:</p>
+        <h2 class="doc-heading">5. Бүртгэл:</h2>
+        <p>Оролцогч багууд бүртгэлийн хугацаанд цахимаар бүртгүүлнэ. Бүртгэлд дараах мэдээллийг бөглөнө:</p>
         <ul>
-            <li>Агаарын чанар, амьдрах орчныг сайжруулах</li>
-            <li>Хог хаягдлыг бууруулах, дахин боловсруулах</li>
-            <li>Ус, эрчим хүчний хэмнэлт</li>
-            <li>Ногоон боловсрол, тогтвортой санхүү</li>
-            <li>Хүнсний аюулгүй байдал, хариуцлагатай хэрэглээ</li>
+            <li>Багийн нэр</li>
+            <li>Багийн ахлагчийн овог, нэр</li>
+            <li>Сургууль, хөтөлбөр, түвшин</li>
+            <li>Утасны дугаар</li>
+            <li>И-мэйл хаяг</li>
+            <li>Багийн гишүүдийн мэдээлэл</li>
+            <li>Төслийн чиглэл</li>
         </ul>
 
-        <h2 class="doc-heading">6. ҮНЭЛГЭЭНИЙ ШАЛГУУР (Нийт 100 оноо)</h2>
-        <ul>
-            <li>Сэдвийн нийцэл (20 оноо)</li>
-            <li>Асуудлын үндэслэл, хэрэгцээ (15 оноо)</li>
-            <li>Шийдлийн шинэлэг байдал (15 оноо)</li>
-            <li>Хэрэгжих боломж, төлөвлөлт (20 оноо)</li>
-            <li>Үр нөлөө, тогтвортой байдал (20 оноо)</li>
-            <li>Багийн чадавх, танилцуулга (10 оноо)</li>
-        </ul>
+        <h2 class="doc-heading">6. Багийн мэдээлэл:</h2>
+        <p>Багийн ахлагч нь багийн үндсэн холбоо барих төлөөлөгч байна. Багийн гишүүдийн үүрэг, оролцоог төслийн саналд тодорхой тусгасан байна.</p>
 
-        <h2 class="doc-heading">7. ХОЛБОО БАРИХ</h2>
-        <p>МУИС-ийн Бизнесийн сургуулийн Оюутны зөвлөл<br>
+        <h2 class="doc-heading">7. Төслийн чиглэл</h2>
+        <p>Оролцогч багууд ногоон хөгжил, тогтвортой шилжилтийн хүрээнд нийгэмд тулгамдаж буй асуудлыг тодорхойлон, бодит хэрэгцээнд нийцсэн, шинэлэг, хэрэгжих боломжтой төслийн санал боловсруулна. Төслийг бүтээгдэхүүн, үйлчилгээ, платформ, хөтөлбөр, кампанит ажил, технологийн шийдэл, байгууллагын дотоод сайжруулалтын санал зэрэг олон хэлбэрээр боловсруулж болно. Төслийн саналыг дараах чиглэлээр боловсруулна. Үүнд:</p>
+        <ol>
+            <li>Агаарын чанар, хотын амьдрах орчныг сайжруулах шийдэл;</li>
+            <li>Хог хаягдлыг бууруулах, ангилан ялгах, дахин ашиглах, дахин боловсруулах тогтолцоо;</li>
+            <li>Ус, эрчим хүч болон бусад нөөцийн үр ашиг, хэмнэлтийг нэмэгдүүлэх шийдэл;</li>
+            <li>Орон нутгийн хүртээмж, тогтвортой хөгжил, тэгш боломжийг дэмжих санаачилга;</li>
+            <li>Хүнсний аюулгүй байдал, хариуцлагатай хэрэглээ, дотоодын үйлдвэрлэл, нийлүүлэлтийн үр ашгийг сайжруулах шийдэл;</li>
+            <li>Ногоон боловсрол, зөв дадал, олон нийтийн оролцоог нэмэгдүүлэх санаачилга;</li>
+            <li>Нийгмийн ялгаатай хэрэгцээтэй иргэдийн оролцоог дэмжсэн хөгжлийн шийдэл;</li>
+            <li>Тогтвортой санхүү, ногоон хэрэглээ, хариуцлагатай санхүүгийн дэмжлэгийн механизм;</li>
+            <li>Уур амьсгалын өөрчлөлтөд дасан зохицох, эрсдэлийг бууруулах, тэсвэртэй байдлыг нэмэгдүүлэх шийдэл;</li>
+            <li>Сургууль, банк, албан байгууллагын дотоод ногоон шилжилт, нөөцийн хэмнэлт, үр ашигт менежментийн санал.</li>
+        </ol>
+
+        <h2 class="doc-heading">8. Сэдвийн нийцэл</h2>
+        <ol>
+            <li>Төсөл нь дор хаяж нэг зарласан чиглэлд шууд хамаарах бөгөөд ногоон хөгжил, тогтвортой шилжилтийн бодит үр нөлөөг тодорхой тусгасан байна.</li>
+            <li>Төслийн санал нь асуудлын үндэслэл, зорилго, үйл ажиллагаа, хүлээгдэж буй үр дүнгээрээ сонгосон чиглэлтэй нийцсэн, хэрэгжих боломжтой, нийгэм, эдийн засаг, байгаль орчинд эерэг нөлөө үзүүлэхүйц байна.</li>
+            <li>Дараах шинжтэй төслийг сэдэвт нийцсэнд тооцно:
+                <ul>
+                    <li>бодит асуудалд суурилсан байх;</li>
+                    <li>ногоон хөгжил, тогтвортой хэрэглээ, нөөцийн үр ашиг, байгаль орчны эерэг нөлөөлөлтэй байх;</li>
+                    <li>хэрэгжих боломжтой, хэмжигдэхүйц үр дүнтэй байх;</li>
+                    <li>нийгэм, эдийн засаг, байгаль орчинд бодит өгөөж бий болгох боломжтой байх.</li>
+                </ul>
+            </li>
+            <li>Ногоон хөгжил, тогтвортой шилжилтийн агуулга сул, эсхүл зөвхөн ерөнхий бизнес, технологийн шинжтэй, зарласан чиглэлтэй шууд уялдаагүй төслийг шаардлага хангаагүйд тооцно.</li>
+        </ol>
+
+        <h2 class="doc-heading">9. Төсөлд тавигдах шаардлага</h2>
+        <p>Ирүүлэх төсөл нь дараах шаардлагыг хангасан байна:</p>
+        <ol>
+            <li>Оролцогчдын өөрсдийн боловсруулсан санал байх;</li>
+            <li>Бодит асуудалд суурилсан байх;</li>
+            <li>Хэрэгжих боломжтой байх;</li>
+            <li>Хэмжигдэхүйц үр нөлөөтэй байх;</li>
+            <li>Тогтвортой хөгжлийн чиг хандлагад нийцсэн байх;</li>
+            <li>Удирдамжид заасан хугацаанд материалаа ирүүлсэн байх;</li>
+            <li>Өгөгдсөн загварын дагуу төслийг боловсруулсан байх;</li>
+            <li>Бусдын оюуны өмчийг зөрчөөгүй байх.</li>
+        </ol>
+
+        <h2 class="doc-heading">10. Төслийн сонгон шалгаруулалт</h2>
+        <p>Төслийн саналыг 100 онооны системээр үнэлж, шалгуур үзүүлэлт бүрээр өгсөн онооны нийлбэрээр оролцогчдыг эрэмбэлнэ. Нийт онооны дүнгээр хамгийн өндөр үнэлгээ авсан шилдэг 15 багийг дараагийн шатны шалгаруулалтад оролцуулна.</p>
+
+        <h2 class="doc-heading">11. Үнэлгээний шалгуур</h2>
+        <p>Оролцогч багуудын ирүүлсэн төслийн саналыг дараах үндсэн шалгуур үзүүлэлтээр үнэлнэ:</p>
+        <ol>
+            <li><strong>Сэдэв, чиглэлд нийцсэн байдал (20 оноо):</strong> Төсөл нь зарласан үндсэн чиглэл болох ногоон хөгжил, тогтвортой шилжилтийн агуулгатай хэрхэн уялдсаныг үнэлнэ.</li>
+            <li><strong>Асуудлын үндэслэл, хэрэгцээ (15 оноо):</strong> Тодорхойлсон асуудал нь бодитой эсэх, судалгаа болон нотолгоо мэдээлэлд тулгуурласан байдлыг үнэлнэ.</li>
+            <li><strong>Шийдлийн шинэлэг байдал (15 оноо):</strong> Санал болгож буй шийдлийн шинэ санаа, бүтээлч хандлага, бусдаас ялгарах онцлогийг үнэлнэ.</li>
+            <li><strong>Хэрэгжих боломж, төлөвлөлт (20 оноо):</strong> Төслийн зорилго, үйл ажиллагааны арга зүй, хэрэгжүүлэх үе шат, нөөц боломжийн бодит байдлыг үнэлнэ.</li>
+            <li><strong>Үр нөлөө, тогтвортой байдал (20 оноо):</strong> Нийгэм, эдийн засаг, байгаль орчинд үзүүлэх эерэг нөлөө болон төсөл цаашид тогтвортой үргэлжлэх боломжийг үнэлнэ.</li>
+            <li><strong>Багийн чадавх, танилцуулга (10 оноо):</strong> Багийн зохион байгуулалт, үүргийн хуваарилалт, төслийг логик дараалалтай, ойлгомжтой боловсруулсан байдлыг үнэлнэ.</li>
+        </ol>
+
+        <h2 class="doc-heading">12. Шагнал, урамшуулал</h2>
+        <p>Шалгарсан баг, оролцогчдод дараах шагнал, урамшуулал олгоно:</p>
+        <ol>
+            <li>Хамтран зохион байгуулах байгууллагын холбогдох шагнал.</li>
+            <li>Хамтран зохион байгуулах байгууллагын холбогдох шагнал.</li>
+            <li>Хамтран зохион байгуулах байгууллагын холбогдох шагнал.</li>
+        </ol>
+
+        <br>
+        <p><strong>Дэлгэрэнгүй мэдээлэл авах, холбоо барих:</strong><br>
+        МУИС-ийн Бизнесийн сургуулийн Оюутны зөвлөл<br>
         Утас: +976 9119-7215<br>
         И-мэйл: businessnumoz@gmail.com</p>
+        
+        <div class="signatures">
+            <div>
+                <p><strong>БОЛОВСРУУЛСАН:</strong></p>
+                <p>МУИС - БИЗНЕСИЙН СУРГУУЛИЙН<br>ОЮУТНЫ ЗӨВЛӨЛИЙН ГИШҮҮН</p>
+                <p>Э.ТЭРГЭЛ</p>
+            </div>
+            <div>
+                <p><strong>ХЯНАСАН:</strong></p>
+                <p>МУИС - БИЗНЕСИЙН СУРГУУЛИЙН<br>ОЮУТНЫ ЗӨВЛӨЛИЙН ДАРГА</p>
+                <p>Г.ЭНХЖИН</p>
+            </div>
+        </div>
 
         <div class="close-modal-btn">
-            <button class="btn-modal" onclick="closeModal()">Хаах</button>
+            <button class="btn-modal interactive-element" onclick="closeModal()">Хаах</button>
         </div>
     </div>
 </div>
 
 <script>
-    // --- 1. Spotlight (Flashlight) Logic ---
+    // --- 1. Custom White Dot Cursor Logic ---
+    const customCursor = document.getElementById('custom-cursor');
+    const interactiveElements = document.querySelectorAll('.interactive-element, a, button, .light-switch');
+
+    document.addEventListener('mousemove', (e) => {
+        // Хулганын хөдөлгөөний дагуу курсорын байрлалыг шинэчлэх
+        customCursor.style.left = `${e.clientX}px`;
+        customCursor.style.top = `${e.clientY}px`;
+    });
+
+    // Товчлуур/линк дээр очих үед курсор алга болох
+    interactiveElements.forEach(el => {
+        el.addEventListener('mouseenter', () => {
+            customCursor.classList.add('hidden');
+        });
+        el.addEventListener('mouseleave', () => {
+            customCursor.classList.remove('hidden');
+        });
+    });
+
+    // --- 2. Spotlight (Flashlight) Logic ---
     const spotlight = document.getElementById('spotlight');
     
     document.addEventListener('mousemove', (e) => {
@@ -559,13 +732,13 @@
         spotlight.style.setProperty('--cursor-y', `${e.clientY}px`);
     });
 
-    // --- 2. Light Switch Logic ---
+    // --- 3. Light Switch Logic ---
     const lightSwitchBtn = document.getElementById('light-switch');
     lightSwitchBtn.addEventListener('click', () => {
         document.body.classList.toggle('lights-on');
     });
 
-    // --- 3. Apple-style Scroll Reveal Logic ---
+    // --- 4. Dynamic Scroll Reveal Logic ---
     function reveal() {
         const reveals = document.querySelectorAll('.reveal');
         for (let i = 0; i < reveals.length; i++) {
@@ -581,9 +754,8 @@
     window.addEventListener('scroll', reveal);
     reveal(); 
 
-    // --- 4. Sunrise Effect Trigger ---
+    // --- 5. Sunrise Effect Trigger ---
     window.addEventListener('scroll', () => {
-        // Trigger background change when scrolling down 25% of viewport
         if (window.scrollY > window.innerHeight * 0.25) {
             document.body.classList.add('sunrise-active');
         } else {
@@ -591,60 +763,68 @@
         }
     });
 
-    // --- 5. Blooming SVG Flowers Logic ---
+    // --- 6. Blooming SVG Flowers Logic (Particles) ---
     let lastScroll = window.scrollY;
     
     window.addEventListener('scroll', () => {
         const currentScroll = window.scrollY;
         
-        if (Math.abs(currentScroll - lastScroll) > 180) {
+        if (Math.abs(currentScroll - lastScroll) > 150) {
             createFlower(currentScroll);
             lastScroll = currentScroll;
         }
     });
 
     function createFlower(scrollY) {
-        // Don't spawn flowers in the very top teaser area
-        if(scrollY < window.innerHeight * 0.4) return;
+        if(scrollY < window.innerHeight * 0.3) return;
 
         const flower = document.createElement('div');
         flower.className = 'flower';
         
         const isLeft = Math.random() > 0.5;
         if (isLeft) {
-            flower.style.left = '-30px';
+            flower.style.left = `${Math.random() * 20}%`;
         } else {
-            flower.style.right = '-30px';
+            flower.style.right = `${Math.random() * 20}%`;
         }
         
-        const randomYOffset = Math.random() * (window.innerHeight * 0.8);
+        const randomYOffset = Math.random() * (window.innerHeight * 0.6);
         flower.style.top = `${scrollY + randomYOffset}px`;
         
         flower.innerHTML = `
             <svg viewBox="0 0 100 100">
-                <circle cx="50" cy="50" r="6" fill="var(--accent)" />
-                <path d="M50 42 C 30 0, 70 0, 50 42 Z" fill="rgba(46, 125, 50, 0.1)" stroke="var(--accent)" stroke-width="1.5"/>
-                <path d="M50 58 C 30 100, 70 100, 50 58 Z" fill="rgba(46, 125, 50, 0.1)" stroke="var(--accent)" stroke-width="1.5"/>
-                <path d="M42 50 C 0 30, 0 70, 42 50 Z" fill="rgba(46, 125, 50, 0.1)" stroke="var(--accent)" stroke-width="1.5"/>
-                <path d="M58 50 C 100 30, 100 70, 58 50 Z" fill="rgba(46, 125, 50, 0.1)" stroke="var(--accent)" stroke-width="1.5"/>
+                <circle cx="50" cy="50" r="4" fill="var(--accent)" />
+                <path d="M50 45 C 35 15, 65 15, 50 45 Z" fill="rgba(46, 125, 50, 0.15)" stroke="var(--accent)" stroke-width="1"/>
+                <path d="M50 55 C 35 85, 65 85, 50 55 Z" fill="rgba(46, 125, 50, 0.15)" stroke="var(--accent)" stroke-width="1"/>
+                <path d="M45 50 C 15 35, 15 65, 45 50 Z" fill="rgba(46, 125, 50, 0.15)" stroke="var(--accent)" stroke-width="1"/>
+                <path d="M55 50 C 85 35, 85 65, 55 50 Z" fill="rgba(46, 125, 50, 0.15)" stroke="var(--accent)" stroke-width="1"/>
             </svg>
         `;
 
         document.body.appendChild(flower);
-        setTimeout(() => { flower.remove(); }, 4500);
+        setTimeout(() => { flower.remove(); }, 5800);
     }
 
-    // --- 6. Strict Modal Logic ---
+    // --- 7. Modal Logic ---
     function openModal() {
-        document.getElementById('modal').style.display = 'flex';
+        const modal = document.getElementById('modal');
+        modal.style.display = 'flex';
+        // Force reflow
+        void modal.offsetWidth;
+        modal.classList.add('show');
         document.body.style.overflow = 'hidden'; 
     }
 
     function closeModal() {
-        document.getElementById('modal').style.display = 'none';
-        document.body.style.overflow = 'auto'; 
+        const modal = document.getElementById('modal');
+        modal.classList.remove('show');
+        setTimeout(() => {
+            modal.style.display = 'none';
+            document.body.style.overflow = 'auto'; 
+        }, 400); // Wait for transition to complete
     }
 </script>
 
 </body>
 </html>
+
